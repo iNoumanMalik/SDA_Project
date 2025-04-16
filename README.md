@@ -1,8 +1,19 @@
-# 🏨 Hostel Management System
+# Project: 🏨 Hostel Management System
 
 A web-based application designed to streamline the process of managing hostel operations such as students, employees, rooms, and payments using modern technologies like **React**.
 
 ---
+
+## 📁 Members
+Nouman Malik SP23-BSE-012
+Sayyam Tahir SP23-BSE-014
+Kazim Shouqat SP23-BSE-024
+Abdullah Sajid SP23-BSE-019
+Daniyal Murtaza SP23-BSE-001
+Sarday Zain SP23-BSE-013
+Adil Bahir SP23-BSE-020
+Uzair Arif SP23-BSE-168
+
 
 ## 🚀 Features & Use Cases
 
@@ -42,6 +53,4 @@ A web-based application designed to streamline the process of managing hostel op
 - **Backend** (optional): Node.js, Express, MongoDB / PostgreSQL
 
 ---
-
-## 📁 Folder Structure (Frontend)
 

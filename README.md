@@ -4,7 +4,7 @@ A web-based application designed to streamline the process of managing hostel op
 
 ---
 
-## 📁 Members
+## 👩‍💻 Members
 Nouman Malik SP23-BSE-012
 Sayyam Tahir SP23-BSE-014
 Kazim Shouqat SP23-BSE-024

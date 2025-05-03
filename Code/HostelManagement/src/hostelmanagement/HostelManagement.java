@@ -10,6 +10,5 @@ public class HostelManagement {
             RoomManager roomManager = new RoomManager();
             new RoomManagementGUI(roomManager).setVisible(true);
         });
-    }
-    
+    }  
 }

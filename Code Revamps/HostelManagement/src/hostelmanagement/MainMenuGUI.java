@@ -35,8 +35,8 @@ public class MainMenuGUI extends JFrame {
         JPanel panel = new JPanel(new GridLayout(1, 3, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JButton studentButton = new JButton("Student");
-        studentButton.setEnabled(false); // disable as per your request
+       JButton studentButton = new JButton("Student");
+        //disable as per your request
 
         JButton employeeButton = new JButton("Employee");
         JButton roomsButton = new JButton("Rooms");
@@ -54,5 +54,9 @@ public class MainMenuGUI extends JFrame {
         roomsButton.addActionListener(e -> {
             new RoomManagementGUI(roomManager).setVisible(true);
         });
+        StudentManager studentManager = new StudentManager();
+      studentButton.addActionListener(e -> {
+    new StudentManagementGUI(studentManager).setVisible(true);
+});
     }
 }

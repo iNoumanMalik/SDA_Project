@@ -1,14 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hostelmanagement;
-
-/**
- *
- * @author SP23-BSE-014
- */
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,22 +7,25 @@ public class MainMenuGUI extends JFrame {
     private UserManager userManager;
     private RoomManager roomManager;
     private EmployeeManager employeeManager;
+    private FinanceManager financeManager; // Add FinanceManager instance
 
     public MainMenuGUI(UserManager userManager) {
         this.userManager = userManager;
         this.roomManager = new RoomManager();
         this.employeeManager = new EmployeeManager();
+        this.financeManager = new FinanceManager(); // Initialize FinanceManager
 
         initializeUI();
     }
 
     private void initializeUI() {
         setTitle("Hostel Management System - Main Menu");
-        setSize(400, 200);
+        setSize(500, 200); // Increased width to accommodate new button
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel panel = new JPanel(new GridLayout(1, 3, 10, 10));
+        // Use a 1x4 grid for 4 buttons (Student, Employee, Rooms, Finance)
+        JPanel panel = new JPanel(new GridLayout(1, 4, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
        JButton studentButton = new JButton("Student");
@@ -40,10 +33,12 @@ public class MainMenuGUI extends JFrame {
 
         JButton employeeButton = new JButton("Employee");
         JButton roomsButton = new JButton("Rooms");
+        JButton financeButton = new JButton("Finance"); // New Finance button
 
         panel.add(studentButton);
         panel.add(employeeButton);
         panel.add(roomsButton);
+        panel.add(financeButton); // Add finance button to the panel
 
         add(panel);
 
@@ -54,9 +49,18 @@ public class MainMenuGUI extends JFrame {
         roomsButton.addActionListener(e -> {
             new RoomManagementGUI(roomManager).setVisible(true);
         });
+
         StudentManager studentManager = new StudentManager();
       studentButton.addActionListener(e -> {
     new StudentManagementGUI(studentManager).setVisible(true);
 });
+
+
+        // Action listener for the new Finance button
+        financeButton.addActionListener(e -> {
+            // Pass the existing financeManager instance to the GUI
+            new FinanceManagerGUI(financeManager).setVisible(true);
+        });
+
     }
 }

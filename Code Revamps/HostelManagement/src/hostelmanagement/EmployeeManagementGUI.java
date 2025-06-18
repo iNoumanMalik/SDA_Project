@@ -17,8 +17,8 @@ import java.awt.event.ActionListener;
 
 public class EmployeeManagementGUI extends JFrame {
     private EmployeeManager employeeManager;
-    private DefaultListModel<String> employeeListModel;
-    private JList<String> employeeList;
+    private DefaultListModel<Employee> employeeListModel;
+    private JList<Employee> employeeList;
 
     public EmployeeManagementGUI(EmployeeManager employeeManager) {
         this.employeeManager = employeeManager;
@@ -53,7 +53,7 @@ public class EmployeeManagementGUI extends JFrame {
 
     private void refreshEmployeeList() {
         employeeListModel.clear();
-        for (String emp : employeeManager.getAllEmployees()) {
+        for (Employee emp : employeeManager.getAllEmployees()) {
             employeeListModel.addElement(emp);
         }
     }
@@ -61,15 +61,49 @@ public class EmployeeManagementGUI extends JFrame {
     private class AddEmployeeListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String name = JOptionPane.showInputDialog(EmployeeManagementGUI.this,
-                    "Enter Employee Name:", "Add Employee", JOptionPane.PLAIN_MESSAGE);
-            if (name != null && !name.trim().isEmpty()) {
-                if (employeeManager.addEmployee(name.trim())) {
+            // Create a panel with 4 text fields for input
+            JTextField nameField = new JTextField();
+            JTextField emailField = new JTextField();
+            JTextField phoneField = new JTextField();
+            JTextField experienceField = new JTextField();
+
+            JPanel panel = new JPanel(new GridLayout(0, 1));
+            panel.add(new JLabel("Name:"));
+            panel.add(nameField);
+            panel.add(new JLabel("Email:"));
+            panel.add(emailField);
+            panel.add(new JLabel("Phone:"));
+            panel.add(phoneField);
+            panel.add(new JLabel("Experience:"));
+            panel.add(experienceField);
+
+            int result = JOptionPane.showConfirmDialog(EmployeeManagementGUI.this, panel,
+                    "Add New Employee", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            if (result == JOptionPane.OK_OPTION) {
+                String name = nameField.getText().trim();
+                String email = emailField.getText().trim();
+                String phone = phoneField.getText().trim();
+                String experience = experienceField.getText().trim();
+
+                // Basic validation (all fields required)
+                if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || experience.isEmpty()) {
+                    JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
+                            "All fields are required.",
+                            "Input Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Optionally, add more validation here (email format, phone number format, etc.)
+
+                Employee newEmployee = new Employee(name, email, phone, experience);
+                if (employeeManager.addEmployee(newEmployee)) {
                     refreshEmployeeList();
                 } else {
                     JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
-                            "Employee already exists or invalid name.",
-                            "Error",
+                            "Employee with this name already exists or invalid input.",
+                            "Add Employee Failed",
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -79,7 +113,7 @@ public class EmployeeManagementGUI extends JFrame {
     private class RemoveEmployeeListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String selected = employeeList.getSelectedValue();
+            Employee selected = employeeList.getSelectedValue();
             if (selected == null) {
                 JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
                         "Please select an employee to remove.",
@@ -88,7 +122,7 @@ public class EmployeeManagementGUI extends JFrame {
                 return;
             }
             int confirm = JOptionPane.showConfirmDialog(EmployeeManagementGUI.this,
-                    "Are you sure you want to remove employee " + selected + "?",
+                    "Are you sure you want to remove employee " + selected.getName() + "?",
                     "Confirm Removal", JOptionPane.YES_NO_OPTION);
 
             if (confirm == JOptionPane.YES_OPTION) {

@@ -61,15 +61,14 @@ public class LoginGUI extends JFrame {
 
             if (userManager.authenticate(username, password)) {
                 SwingUtilities.invokeLater(() -> {
-                    RoomManager roomManager = new RoomManager();
-                    new RoomManagementGUI(roomManager).setVisible(true);
-                });
+                new MainMenuGUI(userManager).setVisible(true);
+            });
                 dispose();  // close login window
             } else {
                 JOptionPane.showMessageDialog(LoginGUI.this,
-                        "Invalid username or password.",
-                        "Login Failed",
-                        JOptionPane.ERROR_MESSAGE);
+                "Invalid username or password.",
+                "Login Failed",
+                JOptionPane.ERROR_MESSAGE);
                 passwordField.setText("");
             }
         }

@@ -1,7 +1,0 @@
-hostelmanagement.RoomManagementGUI$RemoveRoomListener
-hostelmanagement.RoomManagementGUI
-hostelmanagement.RoomManagementGUI$UpdateCapacityListener
-hostelmanagement.RoomManagementGUI$UpdateStatusListener
-hostelmanagement.RoomManager
-hostelmanagement.RoomManagementGUI$AddRoomListener
-hostelmanagement.Room

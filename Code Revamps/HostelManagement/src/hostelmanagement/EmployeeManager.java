@@ -14,28 +14,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeManager {
-    private List<String> employees;
+    private List<Employee> employees;
 
     public EmployeeManager() {
         employees = new ArrayList<>();
         // Optionally add some default employees
-        employees.add("John Doe");
-        employees.add("Jane Smith");
+        employees.add(new Employee("Adil Bashir", "adil12@example.com", "1234567890", "5 years"));
+        employees.add(new Employee("Kazim Shauket", "Kazim23@example.com", "0987654321", "3 years"));
     }
 
-    public List<String> getAllEmployees() {
+    public List<Employee> getAllEmployees() {
         return new ArrayList<>(employees);
     }
 
-    public boolean addEmployee(String name) {
-        if (name == null || name.trim().isEmpty()) return false;
-        if (employees.contains(name)) return false; // avoid duplicates
-        employees.add(name.trim());
+    public boolean addEmployee(Employee employee) {
+        if (employee == null || employee.getName() == null || employee.getName().trim().isEmpty())
+            return false;
+        if (employees.contains(employee)) // uses Employee.equals() based on name
+            return false; // avoid duplicates
+        employees.add(employee);
         return true;
     }
 
-    public boolean removeEmployee(String name) {
-        return employees.remove(name);
+    public boolean removeEmployee(Employee employee) {
+        return employees.remove(employee);
     }
 }
-

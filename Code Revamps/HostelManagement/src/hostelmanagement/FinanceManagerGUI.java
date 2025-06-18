@@ -256,13 +256,4 @@ public class FinanceManagerGUI extends JFrame {
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
         add(mainPanel); // Add the main panel to the JFrame
     }
-
-    // Optional main method for standalone testing of FinanceManagerGUI
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            FinanceManager financeManager = new FinanceManager(); // Create an instance
-            FinanceManagerGUI gui = new FinanceManagerGUI(financeManager);
-            gui.setVisible(true);
-        });
-    }
 }

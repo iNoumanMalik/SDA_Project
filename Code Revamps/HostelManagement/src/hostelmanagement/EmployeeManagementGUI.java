@@ -5,11 +5,6 @@
  */
 package hostelmanagement;
 
-/**
- *
- * @author SP23-BSE-014
- */
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -28,7 +23,7 @@ public class EmployeeManagementGUI extends JFrame {
 
     private void initializeUI() {
         setTitle("Hostel Employee Management");
-        setSize(400, 300);
+        setSize(450, 350); // Adjusted size for new button and better layout
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -39,13 +34,17 @@ public class EmployeeManagementGUI extends JFrame {
 
         JButton addButton = new JButton("Add Employee");
         JButton removeButton = new JButton("Remove Selected");
+        JButton updateButton = new JButton("Update Selected"); // New update button
 
         addButton.addActionListener(new AddEmployeeListener());
         removeButton.addActionListener(new RemoveEmployeeListener());
+        updateButton.addActionListener(new UpdateEmployeeListener()); // Add action listener for update
 
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5)); // Center buttons with spacing
         buttonPanel.add(addButton);
         buttonPanel.add(removeButton);
+        buttonPanel.add(updateButton); // Add the new update button to the panel
 
         add(scrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
@@ -61,7 +60,6 @@ public class EmployeeManagementGUI extends JFrame {
     private class AddEmployeeListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Create a panel with 4 text fields for input
             JTextField nameField = new JTextField();
             JTextField emailField = new JTextField();
             JTextField phoneField = new JTextField();
@@ -95,14 +93,16 @@ public class EmployeeManagementGUI extends JFrame {
                     return;
                 }
 
-                // Optionally, add more validation here (email format, phone number format, etc.)
-
                 Employee newEmployee = new Employee(name, email, phone, experience);
                 if (employeeManager.addEmployee(newEmployee)) {
                     refreshEmployeeList();
+                    JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
+                            "Employee added successfully!",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
-                            "Employee with this name already exists or invalid input.",
+                            "Employee with this name already exists. Please use a unique name.",
                             "Add Employee Failed",
                             JOptionPane.ERROR_MESSAGE);
                 }
@@ -128,6 +128,79 @@ public class EmployeeManagementGUI extends JFrame {
             if (confirm == JOptionPane.YES_OPTION) {
                 if (employeeManager.removeEmployee(selected)) {
                     refreshEmployeeList();
+                    JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
+                            "Employee removed successfully!",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                     JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
+                            "Failed to remove employee.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+    }
+
+    private class UpdateEmployeeListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Employee selectedEmployee = employeeList.getSelectedValue();
+            if (selectedEmployee == null) {
+                JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
+                        "Please select an employee to update.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Populate fields with current values for editing
+            JTextField nameField = new JTextField(selectedEmployee.getName());
+            JTextField emailField = new JTextField(selectedEmployee.getEmail());
+            JTextField phoneField = new JTextField(selectedEmployee.getPhone());
+            JTextField experienceField = new JTextField(selectedEmployee.getExperience());
+
+            JPanel panel = new JPanel(new GridLayout(0, 1));
+            panel.add(new JLabel("Name:"));
+            panel.add(nameField);
+            panel.add(new JLabel("Email:"));
+            panel.add(emailField);
+            panel.add(new JLabel("Phone:"));
+            panel.add(phoneField);
+            panel.add(new JLabel("Experience:"));
+            panel.add(experienceField);
+
+            int result = JOptionPane.showConfirmDialog(EmployeeManagementGUI.this, panel,
+                    "Update Employee Details for " + selectedEmployee.getName(),
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            if (result == JOptionPane.OK_OPTION) {
+                String newName = nameField.getText().trim();
+                String newEmail = emailField.getText().trim();
+                String newPhone = phoneField.getText().trim();
+                String newExperience = experienceField.getText().trim();
+
+                // Basic validation (all fields required)
+                if (newName.isEmpty() || newEmail.isEmpty() || newPhone.isEmpty() || newExperience.isEmpty()) {
+                    JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
+                            "All fields are required.",
+                            "Input Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Call the update method in EmployeeManager
+                if (employeeManager.updateEmployee(selectedEmployee.getName(), newName, newEmail, newPhone, newExperience)) {
+                    refreshEmployeeList();
+                    JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
+                            "Employee details updated successfully!",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
+                            "Failed to update employee. Check if the new name already exists for a different employee.",
+                            "Update Failed",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         }

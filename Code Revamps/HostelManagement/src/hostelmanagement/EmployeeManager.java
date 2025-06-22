@@ -5,11 +5,6 @@
  */
 package hostelmanagement;
 
-/**
- *
- * @author SP23-BSE-014
- */
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,5 +33,37 @@ public class EmployeeManager {
 
     public boolean removeEmployee(Employee employee) {
         return employees.remove(employee);
+    }
+
+    /**
+     * Updates an existing employee's details. Finds the employee by their current name
+     * and updates their email, phone, and experience. If the name itself is changing,
+     * it will also update the name.
+     *
+     * @param originalName The current name of the employee to be updated.
+     * @param newName The new name for the employee.
+     * @param newEmail The new email for the employee.
+     * @param newPhone The new phone number for the employee.
+     * @param newExperience The new experience string for the employee.
+     * @return true if the employee was found and updated, false otherwise.
+     */
+    public boolean updateEmployee(String originalName, String newName, String newEmail, String newPhone, String newExperience) {
+        for (Employee emp : employees) {
+            if (emp.getName().equalsIgnoreCase(originalName)) {
+                // Before updating the name, check if the new name already exists for a *different* employee
+                // This prevents accidentally overwriting another employee if the name is unique identifier
+                if (!originalName.equalsIgnoreCase(newName) && employees.stream().anyMatch(e -> e.getName().equalsIgnoreCase(newName) && e != emp)) {
+                    // New name conflicts with another existing employee
+                    return false;
+                }
+
+                emp.setName(newName);
+                emp.setEmail(newEmail);
+                emp.setPhone(newPhone);
+                emp.setExperience(newExperience);
+                return true;
+            }
+        }
+        return false; // Employee not found
     }
 }

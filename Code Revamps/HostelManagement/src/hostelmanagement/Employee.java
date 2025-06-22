@@ -1,14 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hostelmanagement;
 
-/**
- *
- * @author SP23-BSE-014
- */
 public class Employee {
     private String name;
     private String email;
@@ -39,12 +30,29 @@ public class Employee {
         return experience;
     }
 
+    // Setters (Corrected)
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setExperience(String experience) {
+        this.experience = experience;
+    }
+
     @Override
     public String toString() {
         return name + " (" + email + ", " + phone + ", " + experience + ")";
     }
 
-    // Equals and hashCode based on name (to consider employees equal if names are same)
+    // Equals and hashCode based on name
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -57,21 +65,4 @@ public class Employee {
     public int hashCode() {
         return name == null ? 0 : name.toLowerCase().hashCode();
     }
-
-    void setName(String newName) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    void setEmail(String newEmail) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    void setPhone(String newPhone) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    void setExperience(String newExperience) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 }
-

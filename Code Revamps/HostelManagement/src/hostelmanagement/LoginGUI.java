@@ -6,118 +6,106 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class LoginGUI extends JFrame {
-    private UserManager userManager;
+    private final UserManager userManager;
+    
+    // Login Panel components
+    private final JTextField loginUsernameField = new JTextField();
+    private final JPasswordField loginPasswordField = new JPasswordField();
+    private final JButton loginButton = new JButton("Login");
+    private final JButton registerButton = new JButton("Register");
+    private final JButton showResetButton = new JButton("Reset Password");
 
-    // Components for Login Panel
-    private JTextField loginUsernameField;
-    private JPasswordField loginPasswordField;
-    private JButton loginButton;
-    private JButton registerButton;
-    private JButton showResetButton; // Button to switch to reset panel
+    // Reset Panel components
+    private final JTextField resetUsernameField = new JTextField();
+    private final JPasswordField resetNewPasswordField = new JPasswordField();
+    private final JPasswordField resetConfirmPasswordField = new JPasswordField();
+    private final JButton resetPasswordButton = new JButton("Reset Password");
+    private final JButton backToLoginButton = new JButton("Back to Login");
 
-    // Components for Reset Password Panel
-    private JTextField resetUsernameField;
-    private JPasswordField resetNewPasswordField;
-    private JPasswordField resetConfirmPasswordField;
-    private JButton resetPasswordButton; // The actual reset button
-    private JButton backToLoginButton; // Button to switch back to login panel
-
-    // Panels and CardLayout
-    private JPanel cardPanel; // Panel that uses CardLayout
-    private JPanel loginPanel;
-    private JPanel resetPanel;
-    private CardLayout cardLayout;
+    // Panels
+    private final JPanel cardPanel;
+    private final JPanel loginPanel;
+    private final JPanel resetPanel;
+    private final CardLayout cardLayout = new CardLayout();
 
     public LoginGUI(UserManager userManager) {
         this.userManager = userManager;
 
-        setTitle("Hostel Management System"); // More general title
-        setSize(380, 250); // Adjusted size for embedded panels
+        setTitle("Hostel Management System");
+        setSize(380, 250);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        cardLayout = new CardLayout();
-        cardPanel = new JPanel(cardLayout); // Initialize cardPanel with CardLayout
+        // Initialize panels
+        cardPanel = new JPanel(cardLayout);
+        loginPanel = createLoginPanel();
+        resetPanel = createResetPanel();
 
-        // --- Initialize Login Panel ---
-        loginPanel = new JPanel(new GridLayout(4, 2, 10, 10));
-        loginPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        loginPanel.add(new JLabel("Username:"));
-        loginUsernameField = new JTextField();
-        loginPanel.add(loginUsernameField);
-
-        loginPanel.add(new JLabel("Password:"));
-        loginPasswordField = new JPasswordField();
-        loginPanel.add(loginPasswordField);
-
-        loginButton = new JButton("Login");
-        registerButton = new JButton("Register");
-        showResetButton = new JButton("Reset Password");
-
-        loginPanel.add(loginButton);
-        loginPanel.add(registerButton);
-        loginPanel.add(new JLabel("")); // Empty cell for spacing
-        loginPanel.add(showResetButton); // Add button to show reset panel
-
-        // --- Initialize Reset Password Panel ---
-        resetPanel = new JPanel(new GridLayout(4, 2, 10, 10));
-        resetPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        resetPanel.add(new JLabel("Username:"));
-        resetUsernameField = new JTextField();
-        resetPanel.add(resetUsernameField);
-
-        resetPanel.add(new JLabel("New Password:"));
-        resetNewPasswordField = new JPasswordField();
-        resetPanel.add(resetNewPasswordField);
-
-        resetPanel.add(new JLabel("Confirm Password:"));
-        resetConfirmPasswordField = new JPasswordField();
-        resetPanel.add(resetConfirmPasswordField);
-
-        resetPasswordButton = new JButton("Reset Password");
-        backToLoginButton = new JButton("Back to Login");
-
-        resetPanel.add(backToLoginButton); // Back button on left
-        resetPanel.add(resetPasswordButton); // Reset button on right
-
-        // Add panels to the cardPanel
+        // Add panels to cardPanel
         cardPanel.add(loginPanel, "Login");
         cardPanel.add(resetPanel, "Reset");
 
-        // Add cardPanel to the JFrame
         add(cardPanel, BorderLayout.CENTER);
+        setupActionListeners();
+    }
 
-        // --- Action Listeners ---
+    private JPanel createLoginPanel() {
+        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        panel.add(new JLabel("Username:"));
+        panel.add(loginUsernameField);
+        panel.add(new JLabel("Password:"));
+        panel.add(loginPasswordField);
+        panel.add(loginButton);
+        panel.add(registerButton);
+        panel.add(new JLabel(""));
+        panel.add(showResetButton);
+
+        return panel;
+    }
+
+    private JPanel createResetPanel() {
+        JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        panel.add(new JLabel("Username:"));
+        panel.add(resetUsernameField);
+        panel.add(new JLabel("New Password:"));
+        panel.add(resetNewPasswordField);
+        panel.add(new JLabel("Confirm Password:"));
+        panel.add(resetConfirmPasswordField);
+        panel.add(backToLoginButton);
+        panel.add(resetPasswordButton);
+
+        return panel;
+    }
+
+    private void setupActionListeners() {
         loginButton.addActionListener(new LoginListener());
-        registerButton.addActionListener(e -> {
-            new RegistrationGUI(userManager).setVisible(true);
-        });
-
-        showResetButton.addActionListener(e -> {
-            cardLayout.show(cardPanel, "Reset"); // Switch to reset panel
-            resetUsernameField.setText(loginUsernameField.getText()); // Pre-fill username
-            resetNewPasswordField.setText("");
-            resetConfirmPasswordField.setText("");
-            setTitle("Hostel Management System - Reset Password"); // Update frame title
-        });
-
-        resetPasswordButton.addActionListener(e -> {
-            resetUserPassword();
-        });
-
-        backToLoginButton.addActionListener(e -> {
-            cardLayout.show(cardPanel, "Login"); // Switch back to login panel
-            loginPasswordField.setText(""); // Clear password field
-            setTitle("Hostel Management System"); // Restore frame title
-        });
-
-        // Allow Enter key to trigger login
         loginPasswordField.addActionListener(new LoginListener());
+        
+        registerButton.addActionListener(e -> 
+            new RegistrationGUI(userManager).setVisible(true));
 
-        // Allow Enter key to trigger reset password
+        showResetButton.addActionListener(e -> showResetPanel());
+        backToLoginButton.addActionListener(e -> showLoginPanel());
+        resetPasswordButton.addActionListener(e -> resetUserPassword());
         resetConfirmPasswordField.addActionListener(e -> resetUserPassword());
+    }
+
+    private void showResetPanel() {
+        cardLayout.show(cardPanel, "Reset");
+        resetUsernameField.setText(loginUsernameField.getText());
+        resetNewPasswordField.setText("");
+        resetConfirmPasswordField.setText("");
+        setTitle("Hostel Management System - Reset Password");
+    }
+
+    private void showLoginPanel() {
+        cardLayout.show(cardPanel, "Login");
+        loginPasswordField.setText("");
+        setTitle("Hostel Management System");
     }
 
     private class LoginListener implements ActionListener {
@@ -128,15 +116,15 @@ public class LoginGUI extends JFrame {
 
             if (userManager.authenticate(username, password)) {
                 SwingUtilities.invokeLater(() -> {
-                    new MainMenuGUI(userManager).setVisible(true);
+                    new MainMenuGUI().setVisible(true);
+                    dispose();
                 });
-                dispose(); // Close login window
             } else {
                 JOptionPane.showMessageDialog(LoginGUI.this,
-                        "Invalid username or password.",
-                        "Login Failed",
-                        JOptionPane.ERROR_MESSAGE);
-                loginPasswordField.setText(""); // Clear password field
+                    "Invalid username or password.",
+                    "Login Failed",
+                    JOptionPane.ERROR_MESSAGE);
+                loginPasswordField.setText("");
             }
         }
     }
@@ -147,25 +135,31 @@ public class LoginGUI extends JFrame {
         String confirmPass = new String(resetConfirmPasswordField.getPassword());
 
         if (username.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
+            showError("All fields are required.");
             return;
         }
 
         if (!newPass.equals(confirmPass)) {
-            JOptionPane.showMessageDialog(this, "Passwords do not match.", "Error", JOptionPane.ERROR_MESSAGE);
+            showError("Passwords do not match.");
             return;
         }
 
         if (userManager.resetPassword(username, newPass)) {
-            JOptionPane.showMessageDialog(this, "Password reset successfully. You can now log in with your new password.", "Success", JOptionPane.INFORMATION_MESSAGE);
-            cardLayout.show(cardPanel, "Login"); // Switch back to login panel on success
-            loginUsernameField.setText(username); // Pre-fill username for login
-            loginPasswordField.setText(""); // Clear password field
-            resetNewPasswordField.setText("");
-            resetConfirmPasswordField.setText("");
-            setTitle("Hostel Management System"); // Restore frame title
+            JOptionPane.showMessageDialog(this,
+                "Password reset successfully. You can now log in with your new password.",
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE);
+            showLoginPanel();
+            loginUsernameField.setText(username);
         } else {
-            JOptionPane.showMessageDialog(this, "User not found.", "Error", JOptionPane.ERROR_MESSAGE);
+            showError("User not found.");
         }
+    }
+
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this,
+            message,
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
     }
 }

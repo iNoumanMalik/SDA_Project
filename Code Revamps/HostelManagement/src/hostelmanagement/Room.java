@@ -101,7 +101,7 @@ class RoomManagementGUI extends JFrame {
     private void initializeUI() {
         setTitle("Hostel Room Management System");
         setSize(600, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         // Main panel with BorderLayout

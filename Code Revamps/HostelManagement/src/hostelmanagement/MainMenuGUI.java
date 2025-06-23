@@ -1,58 +1,58 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hostelmanagement;
-
-/**
- *
- * @author SP23-BSE-014
- */
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class MainMenuGUI extends JFrame {
-    private UserManager userManager;
-    private RoomManager roomManager;
-    private EmployeeManager employeeManager;
+    private final RoomManager roomManager;
+    private final EmployeeManager employeeManager;
+    private final FinanceManager financeManager;
+    private final StudentManager studentManager;
 
-    public MainMenuGUI(UserManager userManager) {
-        this.userManager = userManager;
+    public MainMenuGUI() {
         this.roomManager = new RoomManager();
         this.employeeManager = new EmployeeManager();
+        this.financeManager = new FinanceManager();
+        this.studentManager = new StudentManager();
 
         initializeUI();
     }
 
     private void initializeUI() {
         setTitle("Hostel Management System - Main Menu");
-        setSize(400, 200);
+        setSize(700, 200);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel panel = new JPanel(new GridLayout(1, 3, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(1, 6, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JButton studentButton = new JButton("Student");
-        studentButton.setEnabled(false); // disable as per your request
-
-        JButton employeeButton = new JButton("Employee");
-        JButton roomsButton = new JButton("Rooms");
-
-        panel.add(studentButton);
-        panel.add(employeeButton);
-        panel.add(roomsButton);
+        // Create and add all buttons
+        panel.add(createButton("Student", 
+            e -> new StudentManagementGUI(studentManager).setVisible(true)));
+        
+        panel.add(createButton("Employee", 
+            e -> new EmployeeManagementGUI(employeeManager).setVisible(true)));
+        
+        panel.add(createButton("Rooms", 
+            e -> new RoomManagementGUI(roomManager).setVisible(true)));
+        
+        panel.add(createButton("Finance", 
+            e -> new FinanceManagerGUI(financeManager).setVisible(true)));
+        
+        panel.add(createButton("Student Living", 
+            e -> new StudentLivingGUI(studentManager, roomManager).setVisible(true)));
+        
+        panel.add(createButton("Student Leaving", 
+            e -> new StudentLeavingGUI(studentManager, roomManager).setVisible(true)));
 
         add(panel);
+    }
 
-        employeeButton.addActionListener(e -> {
-            new EmployeeManagementGUI(employeeManager).setVisible(true);
-        });
-
-        roomsButton.addActionListener(e -> {
-            new RoomManagementGUI(roomManager).setVisible(true);
-        });
+    private JButton createButton(String text, ActionListener action) {
+        JButton button = new JButton(text);
+        button.addActionListener(action);
+        return button;
     }
 }

@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
+import java.io.*;
 
 public class RegistrationGUI extends JFrame {
     private final UserManager userManager;
@@ -171,7 +172,34 @@ private JLabel createInputLabel(String text) {
 
     private class RegisterListener implements ActionListener {
         @Override
-        public void actionPerformed(ActionEvent e) {
+//        public void actionPerformed(ActionEvent e) {
+//            String username = usernameField.getText().trim();
+//            String password = new String(passwordField.getPassword());
+//            String confirmPassword = new String(confirmPasswordField.getPassword());
+//
+//            if (username.isEmpty() || password.isEmpty()) {
+//                showError("Username and password cannot be empty.");
+//                return;
+//            }
+//
+//            if (!password.equals(confirmPassword)) {
+//                showError("Passwords do not match.");
+//                return;
+//            }
+//            
+//            if (userManager.addUser(username, password)) {
+//                JOptionPane.showMessageDialog(RegistrationGUI.this,
+//                    "Registration successful! You can now login.",
+//                    "Success",
+//                    JOptionPane.INFORMATION_MESSAGE);
+//                dispose(); // Only close the registration window
+//            } else {
+//                showError("Username already exists.");
+//            }
+//        }
+        
+         
+          public void actionPerformed(ActionEvent e) {
             String username = usernameField.getText().trim();
             String password = new String(passwordField.getPassword());
             String confirmPassword = new String(confirmPasswordField.getPassword());
@@ -185,7 +213,8 @@ private JLabel createInputLabel(String text) {
                 showError("Passwords do not match.");
                 return;
             }
-
+            
+            
             if (userManager.addUser(username, password)) {
                 JOptionPane.showMessageDialog(RegistrationGUI.this,
                     "Registration successful! You can now login.",
@@ -193,9 +222,14 @@ private JLabel createInputLabel(String text) {
                     JOptionPane.INFORMATION_MESSAGE);
                 dispose(); // Only close the registration window
             } else {
-                showError("Username already exists.");
+                showError("Something went wrong while registering.");
             }
-        }
+            
+   
+       
+        } 
+           
+      
     }
 
     private void showError(String message) {
@@ -205,3 +239,42 @@ private JLabel createInputLabel(String text) {
             JOptionPane.ERROR_MESSAGE);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

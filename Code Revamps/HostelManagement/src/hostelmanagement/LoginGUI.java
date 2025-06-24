@@ -2,8 +2,11 @@ package hostelmanagement;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import javax.swing.JOptionPane;
+
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
 import java.awt.geom.RoundRectangle2D;
 
 public class LoginGUI extends JFrame {
@@ -289,9 +292,35 @@ public class LoginGUI extends JFrame {
 
     private class LoginListener implements ActionListener {
         @Override
+//        public void actionPerformed(ActionEvent e) {
+//            String username = loginUsernameField.getText().trim();
+//            String password = new String(loginPasswordField.getPassword());
+//            
+//        
+//
+//            if (userManager.authenticate(username, password)) {
+//                SwingUtilities.invokeLater(() -> {
+//                    new MainMenuGUI().setVisible(true);
+//                    dispose();
+//                });
+//            } else {
+//                showErrorDialog("Invalid username or password.", "Login Failed");
+//                loginPasswordField.setText("");
+//            }
+//        }
+        
+        
+        
         public void actionPerformed(ActionEvent e) {
+           
             String username = loginUsernameField.getText().trim();
             String password = new String(loginPasswordField.getPassword());
+            
+            if(username.isEmpty() || password.isEmpty()) {
+                 showErrorDialog("Username or password is required.", "Login Failed");
+                 return;
+            }
+        
 
             if (userManager.authenticate(username, password)) {
                 SwingUtilities.invokeLater(() -> {
@@ -299,12 +328,33 @@ public class LoginGUI extends JFrame {
                     dispose();
                 });
             } else {
-                showErrorDialog("Invalid username or password.", "Login Failed");
+                showErrorDialog("Username or password is incorrect", "Login Failed");
                 loginPasswordField.setText("");
             }
-        }
+        }     
+        
+
+        
+        
+        
+      
+       
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     }
 
+    
+    // DANIYAL CODE
     private void resetUserPassword() {
         String username = resetUsernameField.getText().trim();
         String newPass = new String(resetNewPasswordField.getPassword());
@@ -330,7 +380,46 @@ public class LoginGUI extends JFrame {
         } else {
             showErrorDialog("User not found.", "Error");
         }
-    }
+    } 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     private void showErrorDialog(String message, String title) {
         JOptionPane.showMessageDialog(this,

@@ -28,14 +28,36 @@ public class UserManager {
     
     
         public boolean addUser(String username, String password) {
-              try (PrintWriter writer = new PrintWriter(new FileWriter("E:/users/users.txt", true))) {
-                writer.println(username + ":" + password);
-                writer.close();
-                  return true;
-            } catch (IOException ee) {
-                 return false;
-            }
+    // First check if username already exists
+    if (usernameExists(username)) {
+        return false;
     }
+    
+    // If username doesn't exist, add it to the file
+    try (PrintWriter writer = new PrintWriter(new FileWriter("E:/users/users.txt", true))) {
+        writer.println(username + ":" + password);
+        return true;
+    } catch (IOException ee) {
+        return false;
+    }
+}
+
+public boolean usernameExists(String username) {
+    String filePath = "E:/users/users.txt";
+    
+    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(":");
+            if (parts.length >= 1 && parts[0].trim().equalsIgnoreCase(username)) {
+                return true; // Username found
+            }
+        }
+    } catch (IOException e) {
+        System.err.println("Error reading user file: " + e.getMessage());
+    }
+    return false; // Username not found
+}
     
     
     

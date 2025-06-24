@@ -1,19 +1,128 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hostelmanagement;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.RoundRectangle2D;
+import java.util.ArrayList;
+import java.util.List;
+
+/*
+// Assuming Employee.java and EmployeeManager.java are in the same package and are correct.
+
+class Employee {
+    private String name;
+    private String email;
+    private String phone;
+    private String experience; // e.g., "5 years", "Entry-level"
+
+    public Employee(String name, String email, String phone, String experience) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.experience = experience;
+    }
+
+    // Getters
+    public String getName() { return name; }
+    public String getEmail() { return email; }
+    public String getPhone() { return phone; }
+    public String getExperience() { return experience; }
+
+    // Setters (for updating employee details)
+    public void setName(String name) { this.name = name; }
+    public void setEmail(String email) { this.email = email; }
+    public void setPhone(String phone) { this.phone = phone; }
+    public void setExperience(String experience) { this.experience = experience; }
+
+    @Override
+    public String toString() {
+        return name + " (" + experience + ")";
+    }
+}
+
+class EmployeeManager {
+    private List<Employee> employees;
+
+    public EmployeeManager() {
+        this.employees = new ArrayList<>();
+        // Add some sample employees
+        employees.add(new Employee("John Doe", "john.doe@example.com", "123-456-7890", "5 years"));
+        employees.add(new Employee("Jane Smith", "jane.s@example.com", "098-765-4321", "3 years"));
+    }
+
+    public boolean addEmployee(Employee employee) {
+        // Prevent adding employees with duplicate names (simple check for uniqueness)
+        for (Employee emp : employees) {
+            if (emp.getName().equalsIgnoreCase(employee.getName())) {
+                return false;
+            }
+        }
+        employees.add(employee);
+        return true;
+    }
+
+    public boolean removeEmployee(Employee employee) {
+        return employees.remove(employee);
+    }
+
+    public boolean updateEmployee(String originalName, String newName, String newEmail, String newPhone, String newExperience) {
+        Employee employeeToUpdate = null;
+        for (Employee emp : employees) {
+            if (emp.getName().equalsIgnoreCase(originalName)) {
+                employeeToUpdate = emp;
+                break;
+            }
+        }
+
+        if (employeeToUpdate != null) {
+            // Check if new name already exists for a different employee
+            if (!originalName.equalsIgnoreCase(newName)) { // Only check if name is actually changing
+                for (Employee emp : employees) {
+                    if (emp.getName().equalsIgnoreCase(newName) && emp != employeeToUpdate) {
+                        return false; // New name conflicts with another employee
+                    }
+                }
+            }
+            employeeToUpdate.setName(newName);
+            employeeToUpdate.setEmail(newEmail);
+            employeeToUpdate.setPhone(newPhone);
+            employeeToUpdate.setExperience(newExperience);
+            return true;
+        }
+        return false;
+    }
+
+    public List<Employee> getAllEmployees() {
+        return new ArrayList<>(employees); // Return a copy
+    }
+
+    public Employee getEmployeeByName(String name) {
+        for (Employee emp : employees) {
+            if (emp.getName().equalsIgnoreCase(name)) {
+                return emp;
+            }
+        }
+        return null;
+    }
+}
+*/
 
 public class EmployeeManagementGUI extends JFrame {
     private EmployeeManager employeeManager;
     private DefaultListModel<Employee> employeeListModel;
     private JList<Employee> employeeList;
+
+    // Color scheme (consistent with other GUIs)
+    private final Color darkBackground = new Color(18, 18, 18);
+    private final Color lighterBackground = new Color(30, 30, 30);
+    private final Color accentColor = new Color(0, 150, 255);
+    private final Color textColor = new Color(240, 240, 240);
+    private final Color successColor = new Color(100, 220, 100); // For Add button
+    private final Color infoColor = new Color(0, 180, 255); // For Update button
+    private final Color warningColor = new Color(255, 165, 0); // For Remove button
+    private final Color errorColor = new Color(255, 70, 70); // For Close button
 
     public EmployeeManagementGUI(EmployeeManager employeeManager) {
         this.employeeManager = employeeManager;
@@ -23,31 +132,145 @@ public class EmployeeManagementGUI extends JFrame {
 
     private void initializeUI() {
         setTitle("Hostel Employee Management");
-        setSize(450, 350); // Adjusted size for new button and better layout
+        setSize(600, 500); // Adjusted size for new button and better layout
         setLocationRelativeTo(null);
+        setUndecorated(true); // Undecorated for custom look
+        setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20)); // Rounded corners
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JPanel mainPanel = new JPanel(new BorderLayout(15, 15)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(darkBackground);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+            }
+        };
+        mainPanel.setOpaque(false);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+
+        // Title Bar with Close Button
+        JPanel titleBarPanel = new JPanel(new BorderLayout());
+        titleBarPanel.setOpaque(false);
+        JLabel titleLabel = new JLabel("EMPLOYEE MANAGEMENT", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        titleLabel.setForeground(accentColor);
+        titleBarPanel.add(titleLabel, BorderLayout.CENTER);
+
+        JButton closeButton = new JButton("X");
+        closeButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        closeButton.setForeground(textColor);
+        closeButton.setBackground(errorColor);
+        closeButton.setFocusPainted(false);
+        closeButton.setBorderPainted(false);
+        closeButton.setOpaque(true);
+        closeButton.setPreferredSize(new Dimension(40, 40));
+        closeButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        closeButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        closeButton.addActionListener(e -> dispose());
+
+        JPanel closeButtonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        closeButtonContainer.setOpaque(false);
+        closeButtonContainer.add(closeButton);
+        titleBarPanel.add(closeButtonContainer, BorderLayout.EAST);
+
+        mainPanel.add(titleBarPanel, BorderLayout.NORTH);
+
+        // Employee List Panel
+        JPanel listPanel = new JPanel(new BorderLayout(10, 10)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(lighterBackground);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+            }
+        };
+        listPanel.setOpaque(false);
+        listPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         employeeListModel = new DefaultListModel<>();
         employeeList = new JList<>(employeeListModel);
         employeeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        employeeList.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        employeeList.setBackground(new Color(45, 45, 45)); // Darker background for list
+        employeeList.setForeground(textColor);
+        employeeList.setFixedCellHeight(35); // Taller cells for better readability
+        employeeList.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80), 1));
+        employeeList.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (isSelected) {
+                    c.setBackground(accentColor.darker());
+                    c.setForeground(Color.WHITE);
+                } else {
+                    c.setBackground(new Color(45, 45, 45));
+                    c.setForeground(textColor);
+                }
+                setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12)); // Increased padding for list items
+                return c;
+            }
+        });
+
         JScrollPane scrollPane = new JScrollPane(employeeList);
+        scrollPane.setBorder(BorderFactory.createLineBorder(lighterBackground.brighter(), 2)); // Border for scroll pane
+        listPanel.add(scrollPane, BorderLayout.CENTER);
 
-        JButton addButton = new JButton("Add Employee");
-        JButton removeButton = new JButton("Remove Selected");
-        JButton updateButton = new JButton("Update Selected"); // New update button
+        mainPanel.add(listPanel, BorderLayout.CENTER);
 
-        addButton.addActionListener(new AddEmployeeListener());
-        removeButton.addActionListener(new RemoveEmployeeListener());
-        updateButton.addActionListener(new UpdateEmployeeListener()); // Add action listener for update
+        // Button Panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10)); // Increased horizontal gap
+        buttonPanel.setOpaque(false);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5)); // Center buttons with spacing
+        JButton addButton = createGradientButton("Add Employee", successColor.brighter(), successColor.darker(), new AddEmployeeListener());
+        JButton removeButton = createGradientButton("Remove Selected", warningColor.brighter(), warningColor.darker(), new RemoveEmployeeListener());
+        JButton updateButton = createGradientButton("Update Selected", infoColor.brighter(), infoColor.darker(), new UpdateEmployeeListener());
+
         buttonPanel.add(addButton);
         buttonPanel.add(removeButton);
-        buttonPanel.add(updateButton); // Add the new update button to the panel
+        buttonPanel.add(updateButton);
 
-        add(scrollPane, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        add(mainPanel);
+    }
+
+    private JButton createGradientButton(String text, Color startColor, Color endColor, ActionListener listener) {
+        JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                GradientPaint gp = new GradientPaint(
+                        0, 0, startColor,
+                        getWidth(), getHeight(), endColor
+                );
+                g2.setPaint(gp);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Rounded buttons
+
+                g2.setColor(Color.WHITE);
+                g2.setFont(getFont().deriveFont(Font.BOLD, 15)); // Slightly larger font for buttons
+                FontMetrics fm = g2.getFontMetrics();
+                int x = (getWidth() - fm.stringWidth(getText())) / 2;
+                int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
+                g2.drawString(getText(), x, y);
+
+                g2.dispose();
+            }
+        };
+
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.setPreferredSize(new Dimension(180, 50)); // Wider and taller buttons with more padding
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.addActionListener(listener);
+        return button;
     }
 
     private void refreshEmployeeList() {
@@ -57,26 +280,50 @@ public class EmployeeManagementGUI extends JFrame {
         }
     }
 
+    // Helper to convert Color to Hex string for HTML in JOptionPane
+    private String toHex(Color color) {
+        return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
+    }
+
+    private void showInfoDialog(String message, String title) {
+        JOptionPane.showMessageDialog(this,
+                "<html><font color='" + toHex(textColor) + "'>" + message + "</font></html>",
+                title, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void showErrorDialog(String message, String title) {
+        JOptionPane.showMessageDialog(this,
+                "<html><font color='" + toHex(textColor) + "'>" + message + "</font></html>",
+                title, JOptionPane.ERROR_MESSAGE);
+    }
+
     private class AddEmployeeListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            JTextField nameField = new JTextField();
-            JTextField emailField = new JTextField();
-            JTextField phoneField = new JTextField();
-            JTextField experienceField = new JTextField();
+            JTextField nameField = new JTextField(20);
+            JTextField emailField = new JTextField(20);
+            JTextField phoneField = new JTextField(15);
+            JTextField experienceField = new JTextField(10);
 
-            JPanel panel = new JPanel(new GridLayout(0, 1));
-            panel.add(new JLabel("Name:"));
-            panel.add(nameField);
-            panel.add(new JLabel("Email:"));
-            panel.add(emailField);
-            panel.add(new JLabel("Phone:"));
-            panel.add(phoneField);
-            panel.add(new JLabel("Experience:"));
-            panel.add(experienceField);
+            JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10)); // Grid layout with gaps
+            panel.add(new JLabel("<html><font color='" + toHex(textColor) + "'>Name:</font></html>"));
+            panel.add(createStyledTextField(nameField));
+            panel.add(new JLabel("<html><font color='" + toHex(textColor) + "'>Email:</font></html>"));
+            panel.add(createStyledTextField(emailField));
+            panel.add(new JLabel("<html><font color='" + toHex(textColor) + "'>Phone:</font></html>"));
+            panel.add(createStyledTextField(phoneField));
+            panel.add(new JLabel("<html><font color='" + toHex(textColor) + "'>Experience:</font></html>"));
+            panel.add(createStyledTextField(experienceField));
+            panel.setBackground(lighterBackground); // Set panel background
+
+            // Set custom UIManager properties for JOptionPane
+            customizeOptionPaneUI();
 
             int result = JOptionPane.showConfirmDialog(EmployeeManagementGUI.this, panel,
                     "Add New Employee", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            // Reset UIManager defaults
+            resetOptionPaneUI();
 
             if (result == JOptionPane.OK_OPTION) {
                 String name = nameField.getText().trim();
@@ -84,27 +331,17 @@ public class EmployeeManagementGUI extends JFrame {
                 String phone = phoneField.getText().trim();
                 String experience = experienceField.getText().trim();
 
-                // Basic validation (all fields required)
                 if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || experience.isEmpty()) {
-                    JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
-                            "All fields are required.",
-                            "Input Error",
-                            JOptionPane.ERROR_MESSAGE);
+                    showErrorDialog("All fields are required.", "Input Error");
                     return;
                 }
 
                 Employee newEmployee = new Employee(name, email, phone, experience);
                 if (employeeManager.addEmployee(newEmployee)) {
                     refreshEmployeeList();
-                    JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
-                            "Employee added successfully!",
-                            "Success",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    showInfoDialog("Employee added successfully!", "Success");
                 } else {
-                    JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
-                            "Employee with this name already exists. Please use a unique name.",
-                            "Add Employee Failed",
-                            JOptionPane.ERROR_MESSAGE);
+                    showErrorDialog("Employee with this name already exists. Please use a unique name.", "Add Employee Failed");
                 }
             }
         }
@@ -115,28 +352,19 @@ public class EmployeeManagementGUI extends JFrame {
         public void actionPerformed(ActionEvent e) {
             Employee selected = employeeList.getSelectedValue();
             if (selected == null) {
-                JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
-                        "Please select an employee to remove.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                showErrorDialog("Please select an employee to remove.", "Selection Error");
                 return;
             }
             int confirm = JOptionPane.showConfirmDialog(EmployeeManagementGUI.this,
-                    "Are you sure you want to remove employee " + selected.getName() + "?",
-                    "Confirm Removal", JOptionPane.YES_NO_OPTION);
+                    "<html><font color='" + toHex(textColor) + "'>Are you sure you want to remove employee " + selected.getName() + "?</font></html>",
+                    "Confirm Removal", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
             if (confirm == JOptionPane.YES_OPTION) {
                 if (employeeManager.removeEmployee(selected)) {
                     refreshEmployeeList();
-                    JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
-                            "Employee removed successfully!",
-                            "Success",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    showInfoDialog("Employee removed successfully!", "Success");
                 } else {
-                     JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
-                            "Failed to remove employee.",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                    showErrorDialog("Failed to remove employee.", "Error");
                 }
             }
         }
@@ -147,32 +375,36 @@ public class EmployeeManagementGUI extends JFrame {
         public void actionPerformed(ActionEvent e) {
             Employee selectedEmployee = employeeList.getSelectedValue();
             if (selectedEmployee == null) {
-                JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
-                        "Please select an employee to update.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                showErrorDialog("Please select an employee to update.", "Selection Error");
                 return;
             }
 
             // Populate fields with current values for editing
-            JTextField nameField = new JTextField(selectedEmployee.getName());
-            JTextField emailField = new JTextField(selectedEmployee.getEmail());
-            JTextField phoneField = new JTextField(selectedEmployee.getPhone());
-            JTextField experienceField = new JTextField(selectedEmployee.getExperience());
+            JTextField nameField = new JTextField(selectedEmployee.getName(), 20);
+            JTextField emailField = new JTextField(selectedEmployee.getEmail(), 20);
+            JTextField phoneField = new JTextField(selectedEmployee.getPhone(), 15);
+            JTextField experienceField = new JTextField(selectedEmployee.getExperience(), 10);
 
-            JPanel panel = new JPanel(new GridLayout(0, 1));
-            panel.add(new JLabel("Name:"));
-            panel.add(nameField);
-            panel.add(new JLabel("Email:"));
-            panel.add(emailField);
-            panel.add(new JLabel("Phone:"));
-            panel.add(phoneField);
-            panel.add(new JLabel("Experience:"));
-            panel.add(experienceField);
+            JPanel panel = new JPanel(new GridLayout(4, 2, 10, 10));
+            panel.add(new JLabel("<html><font color='" + toHex(textColor) + "'>Name:</font></html>"));
+            panel.add(createStyledTextField(nameField));
+            panel.add(new JLabel("<html><font color='" + toHex(textColor) + "'>Email:</font></html>"));
+            panel.add(createStyledTextField(emailField));
+            panel.add(new JLabel("<html><font color='" + toHex(textColor) + "'>Phone:</font></html>"));
+            panel.add(createStyledTextField(phoneField));
+            panel.add(new JLabel("<html><font color='" + toHex(textColor) + "'>Experience:</font></html>"));
+            panel.add(createStyledTextField(experienceField));
+            panel.setBackground(lighterBackground);
+
+            // Set custom UIManager properties for JOptionPane
+            customizeOptionPaneUI();
 
             int result = JOptionPane.showConfirmDialog(EmployeeManagementGUI.this, panel,
                     "Update Employee Details for " + selectedEmployee.getName(),
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            // Reset UIManager defaults
+            resetOptionPaneUI();
 
             if (result == JOptionPane.OK_OPTION) {
                 String newName = nameField.getText().trim();
@@ -180,29 +412,48 @@ public class EmployeeManagementGUI extends JFrame {
                 String newPhone = phoneField.getText().trim();
                 String newExperience = experienceField.getText().trim();
 
-                // Basic validation (all fields required)
                 if (newName.isEmpty() || newEmail.isEmpty() || newPhone.isEmpty() || newExperience.isEmpty()) {
-                    JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
-                            "All fields are required.",
-                            "Input Error",
-                            JOptionPane.ERROR_MESSAGE);
+                    showErrorDialog("All fields are required.", "Input Error");
                     return;
                 }
 
-                // Call the update method in EmployeeManager
                 if (employeeManager.updateEmployee(selectedEmployee.getName(), newName, newEmail, newPhone, newExperience)) {
                     refreshEmployeeList();
-                    JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
-                            "Employee details updated successfully!",
-                            "Success",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    showInfoDialog("Employee details updated successfully!", "Success");
                 } else {
-                    JOptionPane.showMessageDialog(EmployeeManagementGUI.this,
-                            "Failed to update employee. Check if the new name already exists for a different employee.",
-                            "Update Failed",
-                            JOptionPane.ERROR_MESSAGE);
+                    showErrorDialog("Failed to update employee. Check if the new name already exists for a different employee.", "Update Failed");
                 }
             }
         }
+    }
+
+    // Helper method to create styled text fields for dialogs
+    private JTextField createStyledTextField(JTextField field) {
+        field.setBackground(new Color(60, 60, 60));
+        field.setForeground(textColor);
+        field.setCaretColor(textColor); // Blinking cursor color
+        field.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(80, 80, 80), 1),
+            BorderFactory.createEmptyBorder(5, 8, 5, 8) // Padding inside text field
+        ));
+        return field;
+    }
+
+    // Helper method to set custom UI for OptionPane
+    private void customizeOptionPaneUI() {
+        UIManager.put("OptionPane.background", lighterBackground);
+        UIManager.put("Panel.background", lighterBackground);
+        UIManager.put("Button.background", accentColor);
+        UIManager.put("Button.foreground", Color.WHITE);
+        UIManager.put("Label.foreground", textColor);
+    }
+
+    // Helper method to reset UI for OptionPane
+    private void resetOptionPaneUI() {
+        UIManager.put("OptionPane.background", null);
+        UIManager.put("Panel.background", null);
+        UIManager.put("Button.background", null);
+        UIManager.put("Button.foreground", null);
+        UIManager.put("Label.foreground", null);
     }
 }

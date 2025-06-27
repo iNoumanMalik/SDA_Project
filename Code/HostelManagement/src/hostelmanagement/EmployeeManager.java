@@ -8,22 +8,19 @@ public class EmployeeManager {
 
     public EmployeeManager() {
         employees = new ArrayList<>();
-        // Optional default entries
         employees.add(new Employee("Adil Bashir", "adil12@example.com", "1234567890", "5 years"));
         employees.add(new Employee("Kazim Shauket", "Kazim23@example.com", "0987654321", "3 years"));
     }
 
     public List<Employee> getAllEmployees() {
-        return new ArrayList<>(employees);
+        return new ArrayList<>(employees); // defensive copy
     }
 
     public boolean addEmployee(Employee employee) {
         if (employee == null || employee.getName() == null || employee.getName().trim().isEmpty())
             return false;
-
-        if (employees.contains(employee)) // uses equals() on name
+        if (employees.contains(employee))
             return false;
-
         employees.add(employee);
         return true;
     }
@@ -32,18 +29,15 @@ public class EmployeeManager {
         return employees.remove(employee);
     }
 
-    /**
-     * Updates an existing employee's details by name.
-     */
     public boolean updateEmployee(String originalName, String newName, String newEmail, String newPhone, String newExperience) {
         for (Employee emp : employees) {
             if (emp.getName().equalsIgnoreCase(originalName)) {
-                // Prevent duplicate names
-                if (!originalName.equalsIgnoreCase(newName) &&
-                        employees.stream().anyMatch(e -> e.getName().equalsIgnoreCase(newName) && e != emp)) {
-                    return false;
+                if (!originalName.equalsIgnoreCase(newName)) {
+                    for (Employee e : employees) {
+                        if (e.getName().equalsIgnoreCase(newName) && e != emp)
+                            return false;
+                    }
                 }
-
                 emp.setName(newName);
                 emp.setEmail(newEmail);
                 emp.setPhone(newPhone);

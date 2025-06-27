@@ -1,141 +1,201 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package hostelmanagement;
-
+import java.util.HashMap;
+import java.util.Map;
 import java.io.*;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-import java.nio.file.*;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class UserManager {
-    private static final String USER_DATA_FILENAME = "userdata.dat";
-    private static final ReentrantLock fileLock = new ReentrantLock();
-    private final Path userDataPath;
-    private final String salt;
+    private Map<String, String> users = new HashMap<>();
 
     public UserManager() {
-        this.userDataPath = Paths.get(System.getProperty("user.home"), 
-                                  ".hostelmanagement", 
-                                  USER_DATA_FILENAME);
-        this.salt = "static-salt-value"; // In production, use per-user salt
-        
-        // Ensure directory exists
-        try {
-            Files.createDirectories(userDataPath.getParent());
-        } catch (IOException e) {
-            throw new RuntimeException("Could not create user data directory", e);
-        }
+        // Default users for initial testing
+        users.put("admin", "admin123");
+        users.put("john", "oldpass123"); // Dummy user for reset functionality
     }
 
-    // Helper method to hash passwords
-    private String hashPassword(String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(salt.getBytes());
-            byte[] hashedPassword = md.digest(password.getBytes());
-            return Base64.getEncoder().encodeToString(hashedPassword);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Password hashing failed", e);
-        }
+//    public boolean addUser(String username, String password) {
+//        if (users.containsKey(username)) {
+//            return false; // User already exists
+//        }
+//        users.put(username, password);
+//        return true;
+//    }
+    
+    
+        public boolean addUser(String username, String password) {
+    // First check if username already exists
+    if (usernameExists(username)) {
+        return false;
     }
+    
+    // If username doesn't exist, add it to the file
+    try (PrintWriter writer = new PrintWriter(new FileWriter("C:\\Users\\Laptop House\\OneDrive\\Desktop\\sda lab 2\\sdaproject\\users.txt", true))) {
+        writer.println(username + ":" + password);
+        return true;
+    } catch (IOException ee) {
+        return false;
+    }
+}
 
-    public boolean addUser(String username, String password) {
-        fileLock.lock();
-        try {
-            if (usernameExists(username)) {
-                return false;
+public boolean usernameExists(String username) {
+    String filePath = "C:\\Users\\Laptop House\\OneDrive\\Desktop\\sda lab 2\\sdaproject\\users.txt";
+    
+    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(":");
+            if (parts.length >= 1 && parts[0].trim().equalsIgnoreCase(username)) {
+                return true; // Username found
             }
-            
-            try (BufferedWriter writer = Files.newBufferedWriter(userDataPath, 
-                    StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
-                writer.write(username + ":" + hashPassword(password) + "\n");
-                return true;
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to add user", e);
-        } finally {
-            fileLock.unlock();
         }
+    } catch (IOException e) {
+        System.err.println("Error reading user file: " + e.getMessage());
     }
+    return false; // Username not found
+}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
-    public boolean usernameExists(String username) {
-        fileLock.lock();
-        try {
-            if (!Files.exists(userDataPath)) {
-                return false;
-            }
-            
-            try (BufferedReader reader = Files.newBufferedReader(userDataPath)) {
-                return reader.lines()
-                    .map(line -> line.split(":"))
-                    .anyMatch(parts -> parts.length > 0 && 
-                             parts[0].equalsIgnoreCase(username));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to check username", e);
-        } finally {
-            fileLock.unlock();
-        }
-    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+//    public boolean authenticate(String username, String password) {
+//        // Authenticate by checking if the username exists and password matches
+//        return password.equals(users.get(username));
+//    }
+    
 
     public boolean authenticate(String username, String password) {
-        fileLock.lock();
-        try {
-            if (!Files.exists(userDataPath)) {
-                return false;
-            }
+    String filePath = "C:\\Users\\Laptop House\\OneDrive\\Desktop\\sda lab 2\\sdaproject\\users.txt";
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        String line;
+//
+        while ((line = reader.readLine()) != null) {
+            // Each line is in format: username:password
+            String[] parts = line.split(":");
             
-            try (BufferedReader reader = Files.newBufferedReader(userDataPath)) {
-                return reader.lines()
-                    .map(line -> line.split(":"))
-                    .filter(parts -> parts.length == 2)
-                    .anyMatch(parts -> parts[0].equalsIgnoreCase(username) && 
-                             parts[1].equals(hashPassword(password)));
+            if (parts.length == 2) {
+                String storedUsername = parts[0].trim().toLowerCase();
+                String storedPassword = parts[1].trim();
+
+                if (storedUsername.equals(username.toLowerCase()) && storedPassword.equals(password)) {
+                    return true; // Match found
+                }
             }
-        } catch (IOException e) {
-            throw new RuntimeException("Authentication failed", e);
-        } finally {
-            fileLock.unlock();
         }
+    } catch (IOException ee) {
+        System.err.println("Error reading user file: " + ee.getMessage());
     }
 
+    return false; // No match found after checking all lines
+}
+
+    
+    
+    
+    
+    
+    
+    // PREVIOUS DANIYALS METHOD
+/*
+    // THIS IS THE MISSING METHOD THAT NEEDS TO BE INCLUDED
     public boolean resetPassword(String username, String newPassword) {
-        fileLock.lock();
-        try {
-            List<String> updatedLines = new ArrayList<>();
-            boolean found = false;
-            
-            if (Files.exists(userDataPath)) {
-                try (BufferedReader reader = Files.newBufferedReader(userDataPath)) {
-                    for (String line : reader.lines().toArray(String[]::new)) {
-                        String[] parts = line.split(":");
-                        if (parts.length == 2 && parts[0].equalsIgnoreCase(username)) {
-                            updatedLines.add(username + ":" + hashPassword(newPassword));
-                            found = true;
-                        } else {
-                            updatedLines.add(line);
-                        }
-                    }
-                }
-            }
-            
-            if (!found) {
-                return false;
-            }
-            
-            try (BufferedWriter writer = Files.newBufferedWriter(userDataPath, 
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-                for (String line : updatedLines) {
-                    writer.write(line + "\n");
-                }
-                return true;
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Password reset failed", e);
-        } finally {
-            fileLock.unlock();
+        if (!users.containsKey(username)) {
+            return false; // User not found, cannot reset password
         }
+        users.put(username, newPassword); // Update the password
+        return true;
     }
+*/
+   
+    public boolean resetPassword(String username, String newPassword) {
+    String filePath = "C:\\Users\\Laptop House\\OneDrive\\Desktop\\sda lab 2\\sdaproject\\users.txt";
+    List<String> updatedLines = new ArrayList<>();
+    boolean found = false;
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(":");
+            if (parts.length == 2) {
+                String fileUsername = parts[0].trim();
+
+                if (fileUsername.equals(username)) {
+                    // Username found, update the password
+                    updatedLines.add(username + ":" + newPassword);
+                    found = true;
+                } else {
+                    // Keep existing user record
+                    updatedLines.add(line);
+                }
+            } else {
+                // In case of badly formatted line, just keep it
+                updatedLines.add(line);
+            }
+        }
+    } catch (IOException e) {
+        System.err.println("Error reading file: " + e.getMessage());
+        return false;
+    }
+
+    if (!found) {
+        return false; // Username not found
+    }
+
+    // Write updated data back to the file
+    try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+        for (String updatedLine : updatedLines) {
+            writer.println(updatedLine);
+        }
+    } catch (IOException e) {
+        System.err.println("Error writing to file: " + e.getMessage());
+        return false;
+    }
+
+    return true; // Password reset and file updated at end
+}
+
+ 
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

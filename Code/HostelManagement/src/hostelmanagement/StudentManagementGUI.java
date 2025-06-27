@@ -8,37 +8,6 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-// Assuming StudentManager.java is in the same package and is correct.
-/*
-class StudentManager {
-    private List<String> students; // Stores student names
-
-    public StudentManager() {
-        this.students = new ArrayList<>();
-        // Add some sample students
-        students.add("Alice Smith");
-        students.add("Bob Johnson");
-        students.add("Charlie Brown");
-    }
-
-    public boolean addStudent(String studentName) {
-        if (studentName == null || studentName.trim().isEmpty() || students.contains(studentName.trim())) {
-            return false; // Student already exists or invalid name
-        }
-        students.add(studentName.trim());
-        return true;
-    }
-
-    public boolean removeStudent(String studentName) {
-        return students.remove(studentName);
-    }
-
-    public List<String> getAllStudents() {
-        return new ArrayList<>(students); // Return a copy to prevent external modification
-    }
-}
-*/
-
 public class StudentManagementGUI extends JFrame {
     private StudentManager studentManager;
     private DefaultListModel<String> studentListModel;
@@ -51,6 +20,7 @@ public class StudentManagementGUI extends JFrame {
     private final Color textColor = new Color(240, 240, 240);
     private final Color successColor = new Color(100, 220, 100); // For Add button
     private final Color warningColor = new Color(255, 165, 0); // For Remove button
+    private final Color updateColor = new Color(0, 191, 255); // For Update button
     private final Color errorColor = new Color(255, 70, 70); // For Close button
 
     public StudentManagementGUI(StudentManager studentManager) {
@@ -156,9 +126,11 @@ public class StudentManagementGUI extends JFrame {
         buttonPanel.setOpaque(false);
 
         JButton addButton = createGradientButton("Add Student", successColor.brighter(), successColor.darker(), new AddStudentListener());
+        JButton updateButton = createGradientButton("Update Student", updateColor.brighter(), updateColor.darker(), new UpdateStudentListener());
         JButton removeButton = createGradientButton("Remove Selected", warningColor.brighter(), warningColor.darker(), new RemoveStudentListener());
 
         buttonPanel.add(addButton);
+        buttonPanel.add(updateButton); // The "Update Student" button is definitely added here.
         buttonPanel.add(removeButton);
 
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -194,7 +166,9 @@ public class StudentManagementGUI extends JFrame {
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
         button.setFocusPainted(false);
-        button.setPreferredSize(new Dimension(180, 50)); // Wider and taller buttons with more padding
+        // --- CHANGE: Reduced button width further for fitting ---
+        button.setPreferredSize(new Dimension(130, 45)); // Reduced width to 130
+        // --- END CHANGE ---
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.addActionListener(listener);
         return button;
@@ -228,21 +202,12 @@ public class StudentManagementGUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             JTextField nameField = new JTextField(20);
-            JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10)); // Add padding
+            JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
             panel.add(new JLabel("<html><font color='" + toHex(textColor) + "'>Student Name:</font></html>"));
             panel.add(nameField);
-            panel.setBackground(lighterBackground); // Set panel background for dialog
+            panel.setBackground(lighterBackground);
 
-            // Custom UIManager settings for dialog elements
-            UIManager.put("OptionPane.background", lighterBackground);
-            UIManager.put("Panel.background", lighterBackground);
-            UIManager.put("Button.background", accentColor);
-            UIManager.put("Button.foreground", Color.WHITE);
-            UIManager.put("Label.foreground", textColor);
-            UIManager.put("TextField.background", new Color(60, 60, 60));
-            UIManager.put("TextField.foreground", textColor);
-            UIManager.put("TextField.caretForeground", textColor);
-
+            applyOptionPaneUIOverrides();
 
             int result = JOptionPane.showConfirmDialog(StudentManagementGUI.this,
                     panel,
@@ -250,16 +215,7 @@ public class StudentManagementGUI extends JFrame {
                     JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.PLAIN_MESSAGE);
 
-            // Reset UIManager defaults if necessary
-            UIManager.put("OptionPane.background", null);
-            UIManager.put("Panel.background", null);
-            UIManager.put("Button.background", null);
-            UIManager.put("Button.foreground", null);
-            UIManager.put("Label.foreground", null);
-            UIManager.put("TextField.background", null);
-            UIManager.put("TextField.foreground", null);
-            UIManager.put("TextField.caretForeground", null);
-
+            resetOptionPaneUIOverrides();
 
             if (result == JOptionPane.OK_OPTION) {
                 String name = nameField.getText().trim();
@@ -277,6 +233,48 @@ public class StudentManagementGUI extends JFrame {
         }
     }
 
+    private class UpdateStudentListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String selectedStudent = studentList.getSelectedValue();
+            if (selectedStudent == null) {
+                showErrorDialog("Please select a student to update.", "Selection Error");
+                return;
+            }
+
+            JTextField newNameField = new JTextField(20);
+            newNameField.setText(selectedStudent);
+            JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+            panel.add(new JLabel("<html><font color='" + toHex(textColor) + "'>New Student Name:</font></html>"));
+            panel.add(newNameField);
+            panel.setBackground(lighterBackground);
+
+            applyOptionPaneUIOverrides();
+
+            int result = JOptionPane.showConfirmDialog(StudentManagementGUI.this,
+                    panel,
+                    "Update Student: " + selectedStudent,
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE);
+
+            resetOptionPaneUIOverrides();
+
+            if (result == JOptionPane.OK_OPTION) {
+                String newName = newNameField.getText().trim();
+                if (!newName.isEmpty()) {
+                    if (studentManager.updateStudent(selectedStudent, newName)) {
+                        refreshStudentList();
+                        showInfoDialog("Student '" + selectedStudent + "' updated to '" + newName + "' successfully.", "Success");
+                    } else {
+                        showErrorDialog("Failed to update student '" + selectedStudent + "'. New name might be a duplicate or invalid.", "Update Error");
+                    }
+                } else {
+                    showErrorDialog("New student name cannot be empty.", "Error");
+                }
+            }
+        }
+    }
+
     private class RemoveStudentListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -285,9 +283,13 @@ public class StudentManagementGUI extends JFrame {
                 showErrorDialog("Please select a student to remove.", "Selection Error");
                 return;
             }
+            applyOptionPaneUIOverrides();
+
             int confirm = JOptionPane.showConfirmDialog(StudentManagementGUI.this,
                     "<html><font color='" + toHex(textColor) + "'>Are you sure you want to remove student " + selected + "?</font></html>",
                     "Confirm Removal", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+            resetOptionPaneUIOverrides();
 
             if (confirm == JOptionPane.YES_OPTION) {
                 if (studentManager.removeStudent(selected)) {
@@ -298,5 +300,27 @@ public class StudentManagementGUI extends JFrame {
                 }
             }
         }
+    }
+
+    private void applyOptionPaneUIOverrides() {
+        UIManager.put("OptionPane.background", lighterBackground);
+        UIManager.put("Panel.background", lighterBackground);
+        UIManager.put("Button.background", accentColor);
+        UIManager.put("Button.foreground", Color.WHITE);
+        UIManager.put("Label.foreground", textColor);
+        UIManager.put("TextField.background", new Color(60, 60, 60));
+        UIManager.put("TextField.foreground", textColor);
+        UIManager.put("TextField.caretForeground", textColor);
+    }
+
+    private void resetOptionPaneUIOverrides() {
+        UIManager.put("OptionPane.background", null);
+        UIManager.put("Panel.background", null);
+        UIManager.put("Button.background", null);
+        UIManager.put("Button.foreground", null);
+        UIManager.put("Label.foreground", null);
+        UIManager.put("TextField.background", null);
+        UIManager.put("TextField.foreground", null);
+        UIManager.put("TextField.caretForeground", null);
     }
 }

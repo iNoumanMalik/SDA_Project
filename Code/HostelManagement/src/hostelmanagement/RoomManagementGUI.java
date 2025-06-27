@@ -8,9 +8,6 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-// Assuming Room.java and RoomManager.java are in the same package and are correct.
-
-
 class Room {
     private String roomNumber;
     private int capacity;
@@ -24,7 +21,6 @@ class Room {
         this.status = "available";
     }
 
-    // Getters and setters
     public String getRoomNumber() { return roomNumber; }
     public int getCapacity() { return capacity; }
     public int getCurrentOccupancy() { return currentOccupancy; }
@@ -45,7 +41,6 @@ class RoomManager {
 
     public RoomManager() {
         this.rooms = new ArrayList<>();
-        // Initialize with some sample rooms
         rooms.add(new Room("101", 2));
         rooms.add(new Room("102", 3));
         rooms.add(new Room("201", 4));
@@ -53,7 +48,6 @@ class RoomManager {
     }
 
     public void addRoom(String roomNumber, int capacity) {
-        // Prevent adding duplicate room numbers
         if (getRoom(roomNumber) == null) {
             rooms.add(new Room(roomNumber, capacity));
         } else {
@@ -97,23 +91,22 @@ class RoomManager {
     }
 }
 
-
 public class RoomManagementGUI extends JFrame {
     private RoomManager roomManager;
     private DefaultListModel<String> roomListModel;
     private JList<String> roomList;
     private JTextArea detailsTextArea;
 
-    // Color scheme (consistent with StudentLivingGUI and LoginGUI)
     private final Color darkBackground = new Color(18, 18, 18);
     private final Color lighterBackground = new Color(30, 30, 30);
     private final Color accentColor = new Color(0, 150, 255);
     private final Color textColor = new Color(240, 240, 240);
     private final Color successColor = new Color(100, 220, 100);
     private final Color infoColor = new Color(0, 180, 255);
-    private final Color warningColor = new Color(255, 165, 0); // Orange for remove
-    private final Color errorColor = new Color(255, 70, 70); // Red for close
+    private final Color warningColor = new Color(255, 165, 0);
+    private final Color errorColor = new Color(255, 70, 70);
 
+ 
     public RoomManagementGUI(RoomManager roomManager) {
         this.roomManager = roomManager;
         initializeUI();
@@ -122,173 +115,165 @@ public class RoomManagementGUI extends JFrame {
 
     private void initializeUI() {
         setTitle("Hostel Room Management System");
-        setSize(800, 600); // Increased size for better layout
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Changed to EXIT_ON_CLOSE for main window behavior
-        setUndecorated(true); // Undecorated for custom look
-        setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20)); // Rounded corners
+        setSize(900, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setUndecorated(true);
+        setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
 
-        JPanel mainPanel = new JPanel(new BorderLayout(15, 15)) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(darkBackground);
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-            }
-        };
-        mainPanel.setOpaque(false);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        // Main Panel with proper layout
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBackground(darkBackground);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // Title and Close Button
-        JPanel titleBarPanel = new JPanel(new BorderLayout());
-        titleBarPanel.setOpaque(false);
-        JLabel titleLabel = new JLabel("ROOM MANAGEMENT", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 30));
-        titleLabel.setForeground(accentColor);
-        titleBarPanel.add(titleLabel, BorderLayout.CENTER);
-
-        JButton closeButton = new JButton("X");
-        closeButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        closeButton.setForeground(textColor);
-        closeButton.setBackground(errorColor);
-        closeButton.setFocusPainted(false);
-        closeButton.setBorderPainted(false);
-        closeButton.setOpaque(true);
-        closeButton.setPreferredSize(new Dimension(40, 40));
-        closeButton.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        closeButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        closeButton.addActionListener(e -> dispose()); // Close the window
+        // Title Bar with proper close button
+        JPanel titleBar = new JPanel(new BorderLayout());
+        titleBar.setOpaque(false);
         
-        JPanel closeButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        closeButtonPanel.setOpaque(false);
-        closeButtonPanel.add(closeButton);
-        titleBarPanel.add(closeButtonPanel, BorderLayout.EAST);
+        JLabel title = new JLabel("Room Management", SwingConstants.CENTER);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        title.setForeground(accentColor);
+        titleBar.add(title, BorderLayout.CENTER);
 
-        mainPanel.add(titleBarPanel, BorderLayout.NORTH);
+        JButton closeBtn = new JButton("×");
+        closeBtn.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        closeBtn.setForeground(textColor);
+        closeBtn.setContentAreaFilled(false);
+        closeBtn.setBorderPainted(false);
+        closeBtn.setFocusPainted(false);
+        closeBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        closeBtn.addActionListener(e -> dispose());
+        titleBar.add(closeBtn, BorderLayout.EAST);
 
-        // Content panel (list on left, controls/details on right)
+        mainPanel.add(titleBar, BorderLayout.NORTH);
+
+        // Content Area
         JPanel contentPanel = new JPanel(new GridBagLayout());
         contentPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
 
-        // Room list on the left
+        // Room List - Left Side
         roomListModel = new DefaultListModel<>();
         roomList = new JList<>(roomListModel);
         roomList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         roomList.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        roomList.setBackground(new Color(45, 45, 45));
+        roomList.setBackground(new Color(40, 40, 50));
         roomList.setForeground(textColor);
-        roomList.setFixedCellHeight(30);
-        roomList.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80), 1));
-        roomList.setCellRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (isSelected) {
-                    c.setBackground(accentColor.darker());
-                    c.setForeground(Color.WHITE);
-                } else {
-                    c.setBackground(new Color(45, 45, 45));
-                    c.setForeground(textColor);
-                }
-                setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-                return c;
-            }
-        });
-        JScrollPane listScrollPane = new JScrollPane(roomList);
-        listScrollPane.setPreferredSize(new Dimension(250, 0)); // Wider list
-        listScrollPane.setBorder(BorderFactory.createLineBorder(lighterBackground.brighter(), 2));
+        roomList.setFixedCellHeight(35);
+        roomList.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        
+        JScrollPane listScroll = new JScrollPane(roomList);
+        listScroll.setPreferredSize(new Dimension(250, 0));
+        listScroll.setBorder(BorderFactory.createLineBorder(new Color(70, 70, 80)));
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.weightx = 0.4;
+        gbc.weightx = 0.3;
         gbc.weighty = 1.0;
-        contentPanel.add(listScrollPane, gbc);
+        contentPanel.add(listScroll, gbc);
 
-        // Right panel for controls and details
-        JPanel rightPanel = new JPanel(new GridBagLayout());
+        // Right Panel - Controls and Details
+        JPanel rightPanel = new JPanel(new BorderLayout(10, 10));
         rightPanel.setOpaque(false);
-        rightPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Inner padding
-        GridBagConstraints rightGbc = new GridBagConstraints();
-        rightGbc.gridwidth = GridBagConstraints.REMAINDER;
-        rightGbc.fill = GridBagConstraints.HORIZONTAL;
-        rightGbc.insets = new Insets(8, 0, 8, 0); // Spacing between components
 
-        // Control buttons
-        rightPanel.add(createGradientButton("Add New Room", successColor.brighter(), successColor.darker(), new AddRoomListener()), rightGbc);
-        rightPanel.add(createGradientButton("Remove Room", warningColor.brighter(), warningColor.darker(), new RemoveRoomListener()), rightGbc);
-        rightPanel.add(createGradientButton("Update Status", infoColor.brighter(), infoColor.darker(), new UpdateStatusListener()), rightGbc);
-        rightPanel.add(createGradientButton("Update Capacity", infoColor.brighter(), infoColor.darker(), new UpdateCapacityListener()), rightGbc);
+        // Control Buttons
+        JPanel buttonPanel = new JPanel(new GridLayout(4, 1, 10, 10));
+        buttonPanel.setOpaque(false);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
 
-        // Spacer to push details to bottom
-        rightGbc.weighty = 1.0;
-        rightPanel.add(Box.createVerticalGlue(), rightGbc);
+        buttonPanel.add(createButton("Add Room", successColor));
+        buttonPanel.add(createButton("Remove Room", warningColor));
+        buttonPanel.add(createButton("Update Status", infoColor));
+        buttonPanel.add(createButton("Update Capacity", infoColor));
 
-        // Room Details Panel
-        JPanel detailsPanel = new JPanel(new BorderLayout(5, 5));
+        rightPanel.add(buttonPanel, BorderLayout.NORTH);
+
+        // Details Panel - Now properly sized
+        JPanel detailsPanel = new JPanel(new BorderLayout());
         detailsPanel.setOpaque(false);
         detailsPanel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(accentColor, 1),
-            "Selected Room Details",
+            "Room Details",
             javax.swing.border.TitledBorder.LEFT,
             javax.swing.border.TitledBorder.TOP,
             new Font("Segoe UI", Font.BOLD, 14),
             accentColor
         ));
-        
+
         detailsTextArea = new JTextArea();
         detailsTextArea.setEditable(false);
-        detailsTextArea.setFont(new Font("Segoe UI Mono", Font.PLAIN, 13));
+        detailsTextArea.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        detailsTextArea.setLineWrap(true);
+        detailsTextArea.setWrapStyleWord(true);
         detailsTextArea.setForeground(textColor);
-        detailsTextArea.setBackground(new Color(40, 40, 40));
+        detailsTextArea.setBackground(new Color(45, 45, 55));
         detailsTextArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        JScrollPane detailsScrollPane = new JScrollPane(detailsTextArea);
-        detailsScrollPane.setPreferredSize(new Dimension(300, 150)); // Fixed height for details
-        detailsScrollPane.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80), 1));
-        detailsPanel.add(detailsScrollPane, BorderLayout.CENTER);
 
-        rightGbc.gridx = 0;
-        rightGbc.gridy = GridBagConstraints.RELATIVE; // Place below buttons
-        rightGbc.weighty = 0.5; // Give some weight to details panel
-        rightGbc.fill = GridBagConstraints.BOTH;
-        rightGbc.insets = new Insets(15, 0, 0, 0); // Top margin for details panel
-        rightPanel.add(detailsPanel, rightGbc);
+        JScrollPane detailsScroll = new JScrollPane(detailsTextArea);
+        detailsScroll.setPreferredSize(new Dimension(350, 200));
+        detailsScroll.setBorder(null);
+        detailsPanel.add(detailsScroll, BorderLayout.CENTER);
 
+        rightPanel.add(detailsPanel, BorderLayout.CENTER);
 
         gbc.gridx = 1;
         gbc.gridy = 0;
-        gbc.weightx = 0.6;
+        gbc.weightx = 0.7;
         contentPanel.add(rightPanel, gbc);
 
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         add(mainPanel);
 
-        // Add selection listener to show details
-        roomList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                updateDetailsArea();
-            }
-        });
+        // Center window properly
+        setLocationRelativeTo(null);
+        setVisible(true);
+
+        // Add action listeners
+        roomList.addListSelectionListener(e -> updateDetailsArea());
     }
 
-    private JButton createGradientButton(String text, Color startColor, Color endColor, ActionListener listener) {
+    private JButton createButton(String text, Color baseColor) {
     JButton button = new JButton(text) {
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+            // Gradient colors based on button type
+            Color startColor, endColor;
+            if (text.equals("Add Room")) {
+                startColor = new Color(100, 220, 100); // Bright green
+                endColor = new Color(60, 160, 60);     // Darker green
+            } else if (text.equals("Remove Room")) {
+                startColor = new Color(255, 120, 90);  // Coral
+                endColor = new Color(220, 70, 60);     // Darker red
+            } else { // Update buttons
+                startColor = new Color(70, 170, 255);  // Bright blue
+                endColor = new Color(40, 120, 220);    // Darker blue
+            }
+
+            // Hover effect
+            if (getModel().isRollover()) {
+                startColor = startColor.brighter();
+                endColor = endColor.brighter();
+            }
+
+            // Pressed effect
+            if (getModel().isPressed()) {
+                startColor = startColor.darker();
+                endColor = endColor.darker();
+            }
+
+            // Paint gradient background
             GradientPaint gp = new GradientPaint(
-                    0, 0, startColor,
-                    getWidth(), getHeight(), endColor
+                0, 0, startColor,
+                getWidth(), getHeight(), endColor
             );
             g2.setPaint(gp);
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
 
+            // Draw text
             g2.setColor(Color.WHITE);
             g2.setFont(getFont().deriveFont(Font.BOLD, 14));
             FontMetrics fm = g2.getFontMetrics();
@@ -300,10 +285,59 @@ public class RoomManagementGUI extends JFrame {
         }
     };
 
+    button.setContentAreaFilled(false);
+    button.setBorderPainted(false);
+    button.setFocusPainted(false);
+    button.setPreferredSize(new Dimension(150, 40));
+    button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    button.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+    
+    // Add appropriate action listeners
+    if (text.equals("Add Room")) {
+        button.addActionListener(new AddRoomListener());
+    } else if (text.equals("Remove Room")) {
+        button.addActionListener(new RemoveRoomListener());
+    } else if (text.equals("Update Status")) {
+        button.addActionListener(new UpdateStatusListener());
+    } else if (text.equals("Update Capacity")) {
+        button.addActionListener(new UpdateCapacityListener());
+    }
+    
+    return button;
+}
+
+    private JButton createModernButton(String text, Color color, ActionListener listener) {
+        JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                Color bgColor = color;
+                if (getModel().isPressed()) {
+                    bgColor = color.darker();
+                } else if (getModel().isRollover()) {
+                    bgColor = color.brighter();
+                }
+
+                g2.setColor(bgColor);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+
+                g2.setColor(Color.WHITE);
+                g2.setFont(getFont().deriveFont(Font.BOLD, 16));
+                FontMetrics fm = g2.getFontMetrics();
+                int x = (getWidth() - fm.stringWidth(getText())) / 2;
+                int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
+                g2.drawString(getText(), x, y);
+
+                g2.dispose();
+            }
+        };
+
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
         button.setFocusPainted(false);
-        button.setPreferredSize(new Dimension(250, 100)); // Consistent button size
+        button.setPreferredSize(new Dimension(250, 55));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
         button.addActionListener(listener);
@@ -315,45 +349,60 @@ public class RoomManagementGUI extends JFrame {
         for (Room room : roomManager.getAllRooms()) {
             roomListModel.addElement(room.toString());
         }
-        updateDetailsArea(); // Update details area when list refreshes
+        updateDetailsArea();
     }
 
     private void updateDetailsArea() {
         String selected = roomList.getSelectedValue();
         if (selected != null) {
-            // Extract room number from string like "Room 101 (available) - 0/2"
             String roomNumber = selected.split(" ")[1]; 
             Room room = roomManager.getRoom(roomNumber);
             if (room != null) {
                 detailsTextArea.setText(
-                    "Room Number: " + room.getRoomNumber() + "\n" +
-                    "Capacity: " + room.getCapacity() + "\n" +
-                    "Current Occupancy: " + room.getCurrentOccupancy() + "\n" +
-                    "Status: " + room.getStatus().toUpperCase()
+                    "══════════════════════════════\n" +
+                    "  ROOM NUMBER:   " + room.getRoomNumber() + "\n" +
+                    "══════════════════════════════\n" +
+                    "  CAPACITY:      " + room.getCapacity() + " students\n" +
+                    "  OCCUPANCY:     " + room.getCurrentOccupancy() + " students\n" +
+                    "  AVAILABLE:     " + (room.getCapacity() - room.getCurrentOccupancy()) + " spaces\n" +
+                    "  STATUS:        " + room.getStatus().toUpperCase() + "\n" +
+                    "══════════════════════════════"
                 );
             } else {
                 detailsTextArea.setText("Details not found for selected room.");
             }
         } else {
-            detailsTextArea.setText("Select a room from the list to see its details.");
+            detailsTextArea.setText("Select a room from the list to view details.");
         }
     }
 
-    // Helper to convert Color to Hex string for HTML in JOptionPane
     private String toHex(Color color) {
         return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
     }
 
-    private void showInfoDialog(String message, String title) {
-        JOptionPane.showMessageDialog(this,
-                "<html><font color='" + toHex(textColor) + "'>" + message + "</font></html>",
-                title, JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private void showErrorDialog(String message, String title) {
-        JOptionPane.showMessageDialog(this,
-                "<html><font color='" + toHex(textColor) + "'>" + message + "</font></html>",
-                title, JOptionPane.ERROR_MESSAGE);
+    private void showStyledDialog(String message, String title, int messageType, Color accent) {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBackground(lighterBackground);
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        titleLabel.setForeground(accent);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        
+        JLabel messageLabel = new JLabel("<html><div style='width:300px;'>" + message + "</div></html>");
+        messageLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        messageLabel.setForeground(textColor);
+        
+        panel.add(titleLabel, BorderLayout.NORTH);
+        panel.add(messageLabel, BorderLayout.CENTER);
+        
+        JOptionPane.showMessageDialog(
+            this,
+            panel,
+            title,
+            messageType
+        );
     }
 
     // Action Listeners
@@ -368,9 +417,8 @@ public class RoomManagementGUI extends JFrame {
             panel.add(roomNumberField);
             panel.add(new JLabel("<html><font color='" + toHex(textColor) + "'>Capacity:</font></html>"));
             panel.add(capacityField);
-            panel.setBackground(lighterBackground); // Set panel background
+            panel.setBackground(lighterBackground);
 
-            // Custom JOptionPane for consistent look
             UIManager.put("OptionPane.background", lighterBackground);
             UIManager.put("Panel.background", lighterBackground);
             UIManager.put("Button.background", accentColor);
@@ -380,7 +428,6 @@ public class RoomManagementGUI extends JFrame {
             UIManager.put("TextField.foreground", textColor);
             UIManager.put("TextField.caretForeground", textColor);
 
-
             int result = JOptionPane.showConfirmDialog(
                 RoomManagementGUI.this,
                 panel,
@@ -389,7 +436,6 @@ public class RoomManagementGUI extends JFrame {
                 JOptionPane.PLAIN_MESSAGE
             );
 
-            // Reset UIManager defaults if necessary, or manage a custom UI for dialogs
             UIManager.put("OptionPane.background", null);
             UIManager.put("Panel.background", null);
             UIManager.put("Button.background", null);
@@ -398,7 +444,6 @@ public class RoomManagementGUI extends JFrame {
             UIManager.put("TextField.background", null);
             UIManager.put("TextField.foreground", null);
             UIManager.put("TextField.caretForeground", null);
-
 
             if (result == JOptionPane.OK_OPTION) {
                 try {
@@ -414,51 +459,78 @@ public class RoomManagementGUI extends JFrame {
                     
                     roomManager.addRoom(roomNumber, capacity);
                     refreshRoomList();
-                    showInfoDialog("Room " + roomNumber + " added successfully.", "Success");
+                    showStyledDialog("Room " + roomNumber + " added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE, successColor);
                 } catch (NumberFormatException ex) {
-                    showErrorDialog("Please enter a valid number for capacity.", "Input Error");
+                    showStyledDialog("Please enter a valid number for capacity.", "Input Error", JOptionPane.ERROR_MESSAGE, errorColor);
                 } catch (IllegalArgumentException ex) {
-                    showErrorDialog(ex.getMessage(), "Error");
+                    showStyledDialog(ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, errorColor);
                 }
             }
         }
     }
 
-    private class RemoveRoomListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String selected = roomList.getSelectedValue();
-            if (selected == null) {
-                showErrorDialog("Please select a room to remove.", "Selection Error");
-                return;
-            }
+   private class RemoveRoomListener implements ActionListener {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String selected = roomList.getSelectedValue();
+        if (selected == null) {
+            showStyledDialog("Please select a room to remove.", "Selection Error", 
+                JOptionPane.ERROR_MESSAGE, errorColor);
+            return;
+        }
 
-            String roomNumber = selected.split(" ")[1];
-            int confirm = JOptionPane.showConfirmDialog(
-                RoomManagementGUI.this,
-                "<html><font color='" + toHex(textColor) + "'>Are you sure you want to remove room " + roomNumber + "?</font></html>",
-                "Confirm Removal",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE
-            );
+        String roomNumber = selected.split(" ")[1];
+        
+        // Create a custom panel for the dialog
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(lighterBackground);
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        
+        JLabel message = new JLabel(
+            "<html><div style='width:300px; color:" + toHex(textColor) + 
+            "'>Are you sure you want to remove room " + roomNumber + "?</div></html>");
+        message.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        panel.add(message, BorderLayout.CENTER);
 
-            if (confirm == JOptionPane.YES_OPTION) {
-                if (roomManager.removeRoom(roomNumber)) {
-                    refreshRoomList();
-                    showInfoDialog("Room " + roomNumber + " removed successfully.", "Success");
-                } else {
-                    showErrorDialog("Failed to remove room " + roomNumber + ". It might not exist.", "Error");
-                }
+        // Customize the option pane
+        UIManager.put("OptionPane.background", lighterBackground);
+        UIManager.put("Panel.background", lighterBackground);
+        UIManager.put("Button.background", accentColor);
+        UIManager.put("Button.foreground", Color.WHITE);
+
+        int confirm = JOptionPane.showConfirmDialog(
+            RoomManagementGUI.this,
+            panel,
+            "Confirm Removal",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE
+        );
+
+        // Reset UI manager defaults
+        UIManager.put("OptionPane.background", null);
+        UIManager.put("Panel.background", null);
+        UIManager.put("Button.background", null);
+        UIManager.put("Button.foreground", null);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            if (roomManager.removeRoom(roomNumber)) {
+                refreshRoomList();
+                showStyledDialog("Room " + roomNumber + " removed successfully.", 
+                    "Success", JOptionPane.INFORMATION_MESSAGE, successColor);
+            } else {
+                showStyledDialog("Failed to remove room " + roomNumber + ". It might not exist.", 
+                    "Error", JOptionPane.ERROR_MESSAGE, errorColor);
             }
         }
     }
+}
 
     private class UpdateStatusListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String selected = roomList.getSelectedValue();
             if (selected == null) {
-                showErrorDialog("Please select a room to update its status.", "Selection Error");
+                showStyledDialog("Please select a room to update its status.", "Selection Error", JOptionPane.ERROR_MESSAGE, errorColor);
                 return;
             }
 
@@ -471,13 +543,13 @@ public class RoomManagementGUI extends JFrame {
                 JOptionPane.PLAIN_MESSAGE,
                 null,
                 statusOptions,
-                roomManager.getRoom(roomNumber).getStatus() // Pre-select current status
+                roomManager.getRoom(roomNumber).getStatus()
             );
 
             if (newStatus != null) {
                 roomManager.updateRoomStatus(roomNumber, newStatus);
                 refreshRoomList();
-                showInfoDialog("Status of room " + roomNumber + " updated to " + newStatus + ".", "Status Updated");
+                showStyledDialog("Status of room " + roomNumber + " updated to " + newStatus + ".", "Status Updated", JOptionPane.INFORMATION_MESSAGE, infoColor);
             }
         }
     }
@@ -487,19 +559,18 @@ public class RoomManagementGUI extends JFrame {
         public void actionPerformed(ActionEvent e) {
             String selected = roomList.getSelectedValue();
             if (selected == null) {
-                showErrorDialog("Please select a room to update its capacity.", "Selection Error");
+                showStyledDialog("Please select a room to update its capacity.", "Selection Error", JOptionPane.ERROR_MESSAGE, errorColor);
                 return;
             }
 
             String roomNumber = selected.split(" ")[1];
-            JTextField capacityField = new JTextField(String.valueOf(roomManager.getRoom(roomNumber).getCapacity()), 5); // Pre-fill current capacity
+            JTextField capacityField = new JTextField(String.valueOf(roomManager.getRoom(roomNumber).getCapacity()), 5);
 
             JPanel panel = new JPanel(new GridLayout(1, 2, 5, 5));
             panel.add(new JLabel("<html><font color='" + toHex(textColor) + "'>New Capacity:</font></html>"));
             panel.add(capacityField);
-            panel.setBackground(lighterBackground); // Set panel background
+            panel.setBackground(lighterBackground);
 
-            // Custom JOptionPane for consistent look
             UIManager.put("OptionPane.background", lighterBackground);
             UIManager.put("Panel.background", lighterBackground);
             UIManager.put("Button.background", accentColor);
@@ -517,7 +588,6 @@ public class RoomManagementGUI extends JFrame {
                 JOptionPane.PLAIN_MESSAGE
             );
 
-            // Reset UIManager defaults if necessary
             UIManager.put("OptionPane.background", null);
             UIManager.put("Panel.background", null);
             UIManager.put("Button.background", null);
@@ -533,7 +603,6 @@ public class RoomManagementGUI extends JFrame {
                     if (newCapacity <= 0) {
                         throw new IllegalArgumentException("Capacity must be positive.");
                     }
-                    // Optional: Check if new capacity is less than current occupancy
                     Room room = roomManager.getRoom(roomNumber);
                     if (room != null && newCapacity < room.getCurrentOccupancy()) {
                         throw new IllegalArgumentException("New capacity cannot be less than current occupancy (" + room.getCurrentOccupancy() + ").");
@@ -541,13 +610,20 @@ public class RoomManagementGUI extends JFrame {
 
                     roomManager.updateRoomCapacity(roomNumber, newCapacity);
                     refreshRoomList();
-                    showInfoDialog("Capacity of room " + roomNumber + " updated to " + newCapacity + ".", "Capacity Updated");
+                    showStyledDialog("Capacity of room " + roomNumber + " updated to " + newCapacity + ".", "Capacity Updated", JOptionPane.INFORMATION_MESSAGE, infoColor);
                 } catch (NumberFormatException ex) {
-                    showErrorDialog("Please enter a valid number for capacity.", "Input Error");
+                    showStyledDialog("Please enter a valid number for capacity.", "Input Error", JOptionPane.ERROR_MESSAGE, errorColor);
                 } catch (IllegalArgumentException ex) {
-                    showErrorDialog(ex.getMessage(), "Error");
+                    showStyledDialog(ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, errorColor);
                 }
             }
         }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            RoomManager manager = new RoomManager();
+            new RoomManagementGUI(manager);
+        });
     }
 }

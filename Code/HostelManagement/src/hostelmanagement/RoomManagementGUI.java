@@ -36,8 +36,9 @@ class Room {
     }
 }
 
-class RoomManager {
+class RoomManager implements RoomSubject{
     private List<Room> rooms;
+    private List<RoomObserver> observers = new ArrayList<>();  // List of observers
 
     public RoomManager() {
         this.rooms = new ArrayList<>();
@@ -45,6 +46,25 @@ class RoomManager {
         rooms.add(new Room("102", 3));
         rooms.add(new Room("201", 4));
         rooms.add(new Room("202", 2));
+    }
+    
+    @Override
+    public void registerObserver(RoomObserver observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(RoomObserver observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (RoomObserver observer : observers) {
+            for (Room room : rooms) {
+                observer.update(room);
+            }
+        }
     }
 
     public void addRoom(String roomNumber, int capacity) {
@@ -59,19 +79,22 @@ class RoomManager {
         return rooms.removeIf(room -> room.getRoomNumber().equals(roomNumber));
     }
 
+       // Modify existing methods to notify observers
     public void updateRoomStatus(String roomNumber, String newStatus) {
         for (Room room : rooms) {
             if (room.getRoomNumber().equals(roomNumber)) {
                 room.setStatus(newStatus);
+                notifyObservers();  // Notify when status changes
                 break;
             }
         }
     }
-
+    
     public void updateRoomCapacity(String roomNumber, int newCapacity) {
         for (Room room : rooms) {
             if (room.getRoomNumber().equals(roomNumber)) {
                 room.setCapacity(newCapacity);
+                notifyObservers();  // Notify when capacity changes
                 break;
             }
         }
@@ -91,7 +114,7 @@ class RoomManager {
     }
 }
 
-public class RoomManagementGUI extends JFrame {
+public class RoomManagementGUI extends JFrame implements RoomObserver{
     private RoomManager roomManager;
     private DefaultListModel<String> roomListModel;
     private JList<String> roomList;
@@ -111,6 +134,14 @@ public class RoomManagementGUI extends JFrame {
         this.roomManager = roomManager;
         initializeUI();
         refreshRoomList();
+    }
+    
+    public void update(Room room) {
+        // This method will be called when any room changes
+        SwingUtilities.invokeLater(() -> {
+            refreshRoomList();
+            updateDetailsArea();
+        });
     }
 
     private void initializeUI() {

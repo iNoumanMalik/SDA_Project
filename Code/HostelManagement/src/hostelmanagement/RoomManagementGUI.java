@@ -220,9 +220,9 @@ public class RoomManagementGUI extends JFrame {
 
         // Control buttons
         rightPanel.add(createGradientButton("Add New Room", successColor.brighter(), successColor.darker(), new AddRoomListener()), rightGbc);
-        rightPanel.add(createGradientButton("Remove Selected Room", warningColor.brighter(), warningColor.darker(), new RemoveRoomListener()), rightGbc);
-        rightPanel.add(createGradientButton("Update Room Status", infoColor.brighter(), infoColor.darker(), new UpdateStatusListener()), rightGbc);
-        rightPanel.add(createGradientButton("Update Room Capacity", infoColor.brighter(), infoColor.darker(), new UpdateCapacityListener()), rightGbc);
+        rightPanel.add(createGradientButton("Remove Room", warningColor.brighter(), warningColor.darker(), new RemoveRoomListener()), rightGbc);
+        rightPanel.add(createGradientButton("Update Status", infoColor.brighter(), infoColor.darker(), new UpdateStatusListener()), rightGbc);
+        rightPanel.add(createGradientButton("Update Capacity", infoColor.brighter(), infoColor.darker(), new UpdateCapacityListener()), rightGbc);
 
         // Spacer to push details to bottom
         rightGbc.weighty = 1.0;
@@ -276,35 +276,36 @@ public class RoomManagementGUI extends JFrame {
     }
 
     private JButton createGradientButton(String text, Color startColor, Color endColor, ActionListener listener) {
-        JButton button = new JButton(text) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    JButton button = new JButton(text) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                GradientPaint gp = new GradientPaint(
-                        0, 0, startColor,
-                        getWidth(), getHeight(), endColor
-                );
-                g2.setPaint(gp);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); // Rounded buttons
+            GradientPaint gp = new GradientPaint(
+                    0, 0, startColor,
+                    getWidth(), getHeight(), endColor
+            );
+            g2.setPaint(gp);
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
 
-                g2.setColor(Color.WHITE);
-                g2.setFont(getFont().deriveFont(Font.BOLD, 14));
-                FontMetrics fm = g2.getFontMetrics();
-                int x = (getWidth() - fm.stringWidth(getText())) / 2;
-                int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
-                g2.drawString(getText(), x, y);
+            g2.setColor(Color.WHITE);
+            g2.setFont(getFont().deriveFont(Font.BOLD, 14));
+            FontMetrics fm = g2.getFontMetrics();
+            int x = (getWidth() - fm.stringWidth(getText())) / 2;
+            int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
+            g2.drawString(getText(), x, y);
 
-                g2.dispose();
-            }
-        };
+            g2.dispose();
+        }
+    };
 
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
         button.setFocusPainted(false);
-        button.setPreferredSize(new Dimension(200, 45)); // Consistent button size
+        button.setPreferredSize(new Dimension(250, 100)); // Consistent button size
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
         button.addActionListener(listener);
         return button;
     }

@@ -34,7 +34,7 @@ public class UserManager {
     }
     
     // If username doesn't exist, add it to the file
-    try (PrintWriter writer = new PrintWriter(new FileWriter("E:/users/users.txt", true))) {
+    try (PrintWriter writer = new PrintWriter(new FileWriter("D:\\Programs\\SDA Project\\data.txt", true))) {
         writer.println(username + ":" + password);
         return true;
     } catch (IOException ee) {
@@ -43,7 +43,7 @@ public class UserManager {
 }
 
 public boolean usernameExists(String username) {
-    String filePath = "E:/users/users.txt";
+    String filePath = "D:\\\\Programs\\\\SDA Project\\\\data.txt";
     
     try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
         String line;
@@ -97,7 +97,7 @@ public boolean usernameExists(String username) {
     
 
     public boolean authenticate(String username, String password) {
-    String filePath = "E:/users/users.txt";
+    String filePath = "D:\\Programs\\SDA Project\\data.txt";
 
     try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
         String line;

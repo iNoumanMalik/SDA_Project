@@ -8,6 +8,8 @@ Sayyam (SP23-BSE-014): https://drive.google.com/file/d/1CjOlPYbvOZ-HdoaVZ3wz34Z1
 
 Abdullah Sajid SP23-BSE-019 https://drive.google.com/file/d/18Xwj5bNXPsmZhW6aSJ2J-MOC0oHteccJ/view?usp=drive_link
 
+Uzair Arif SP23-BSE-168    https://drive.google.com/file/d/1IXMXZAbD5E6yZb3RenmUeIZyMs4Z8Rhl/view?usp=sharing
+
 Daniyal Muurtaza SP23-BSE-001 https://drive.google.com/file/d/1T4g0CUAXvLGuRleC4V19dxnKVP9dgvZb/view?usp=drive_link
 
 Adil Bashir (SP23-BSE-020) => https://drive.google.com/file/d/15ym4W4isv0D0LbsqKcRwv5kpjkUhUi5D/view?usp=sharing

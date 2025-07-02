@@ -9,5 +9,7 @@ package hostelmanagement;
  * @author inoum
  */
 public interface RoomSubject {
-    
+    void registerObserver(RoomObserver observer);
+    void removeObserver(RoomObserver observer);
+    void notifyObservers();
 }

@@ -14,22 +14,45 @@ public class Employee {
     }
 
     // Getters
-    public String getName() { return name; }
-    public String getEmail() { return email; }
-    public String getPhone() { return phone; }
-    public String getExperience() { return experience; }
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getExperience() {
+        return experience;
+    }
 
     // Setters
-    public void setName(String name) { this.name = name; }
-    public void setEmail(String email) { this.email = email; }
-    public void setPhone(String phone) { this.phone = phone; }
-    public void setExperience(String experience) { this.experience = experience; }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setExperience(String experience) {
+        this.experience = experience;
+    }
 
     @Override
     public String toString() {
         return name + " (" + email + ", " + phone + ", " + experience + ")";
     }
 
+    // Equals and hashCode based on name (case-insensitive for comparison)
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
